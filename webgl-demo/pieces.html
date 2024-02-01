@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Breaking Pieces</title>
+  <style>
+    body {
+      margin: 0 auto;
+      background: #000;
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <script src="./lib/three.js"></script>
+  <script src="./lib/tween.min.js"></script>
+  <script>
+      // 3D粒子控制逻辑
+      (function() {
+          'use strict';
+
+          // 渲染器对象
+          var rendererObj = {
+              _renderCallbacks : [],
+
+              onRender: function(callback, context) {
+                  this._renderCallbacks.push({
+                      cb  : callback,
+                      ctx : context || this
+                  });
+                  return this;
+              },
+
+              start: function(canvasId, scene, camera) {
+                  var that = this;
+                  var renderer = new THREE.WebGLRenderer({
+                      canvas : document.getElementById(canvasId),
+                      alpha  : true
+                  });
+
+                  renderer.setSize(window.innerWidth, window.innerHeight);
+                  window.addEventListener('resize', setSize);
+
+                  renderLoop();
+                  return this;
+
+                  function setSize() {
+                      renderer.setSize(window.innerWidth, window.innerHeight);
+                  }
+                  function walkCallbacks() {
+                      for (var i = that._renderCallbacks.length; i--;) {
+                          that._renderCallbacks[i].cb.call(that._renderCallbacks[i].ctx);
+                      }
+                  }
+                  function renderLoop() {
+                      walkCallbacks();
+                      requestAnimationFrame(renderLoop);
+                      renderer.render(scene, camera);
+                  }
+              }
+          };
+
+          // 相机控制对象
+          var cameraObj = {
+              _camera   : null,
+              // 摄像机当前旋转的角度
+              _degree   : 0,
+              // 摄像机距离原点的距离，摄像机将以原点为圆心，distance为半径旋转
+              _distance : 1500,
+
+              getCamera: function() {
+                  return this._camera;
+              },
+
+              // 摄像机旋转动画
+              rotateFromTo: function(fromAng, fromDist, toAng, toDist, speed) {
+                  this._degree   = fromAng;
+                  this._distance = fromDist;
+
+                  new TWEEN.Tween(this).to({
+                      _degree   : toAng,
+                      _distance : toDist
+                  }, speed).easing(TWEEN.Easing.Cubic.InOut).start();
+
+                  return this;
+              },
+
+              update: function() {
+                  this._camera.position.y = 0;
+                  this._camera.position.x = this._distance * Math.sin(this._degree);
+                  this._camera.position.z = this._distance * Math.cos(this._degree);
+                  this._camera.lookAt(new THREE.Vector3(0, 0, 0));
+                  return this;
+              },
+
+              init: function() {
+                  var camera = this._camera =
+                      new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+
+                  window.addEventListener('resize', function() {
+                      camera.aspect = window.innerWidth / window.innerHeight;
+                      camera.updateProjectionMatrix();
+                  });
+
+                  return this.update();
+              }
+          };
+
+          // 面片粒子对象
+          function PicPlaneItem(scene, width, height) {
+              // 创建相关的3d对象
+              this._geom = new THREE.PlaneGeometry(width, height, 1, 1);
+
+              this._mat = new THREE.MeshPhongMaterial();
+              this._mat.transparent = true;
+              this._mat.side = THREE.DoubleSide;
+
+              this._mesh = new THREE.Mesh(this._geom, this._mat);
+              scene.add(this._mesh);
+
+              return this;
+          }
+          PicPlaneItem.prototype = {
+              _RANGE_X_MAX  : 2000,
+              _RANGE_X_MIN  : 0,
+              _RANGE_Y_MAX  : 1200,
+              _RANGE_Y_MIN  : 0,
+              _RANGE_Z_MAX  : 2000,
+              _RANGE_Z_MIN  : 0,
+              _RANGE_ROTATE : Math.PI * 8,
+
+              // 粒子在 0-_START_MOVE_PCT之间随机取一个值作为开始移动的起始值
+              _START_MOVE_PCT : 0,
+
+              // 设置粒子初始状态和最终状态
+              setRandPos: function(posX, posY, posZ) {
+                  var randPctX = Math.random() - 0.5;
+                  var randPctY = Math.random() - 0.5;
+                  var randPctZ = Math.random() - 0.5;
+
+                  this._inPos  = { x: posX, y: posY, z: posZ };
+
+                  this._outPos = {
+                      x: (this._RANGE_X_MAX - this._RANGE_X_MIN) * randPctX + this._RANGE_X_MIN * (randPctX > 0 ? 1 : -1),
+                      y: (this._RANGE_Y_MAX - this._RANGE_Y_MIN) * randPctY + this._RANGE_Y_MIN * (randPctY > 0 ? 1 : -1),
+                      z: (this._RANGE_Z_MAX - this._RANGE_Z_MIN) * randPctZ + this._RANGE_Z_MIN * (randPctZ > 0 ? 1 : -1),
+                      rotate   : Math.random() * this._RANGE_ROTATE,
+                      startPct : Math.random() * this._START_MOVE_PCT
+                  };
+
+                  return this;
+              },
+
+              // 设置geom对象的uv映射
+              // https://stackoverflow.com/questions/19891507/correct-uv-mapping-three-js?answertab=active#tab-top
+              setUV: function(leftPct, rightPct, bottomPct, topPct) {
+                  this._geom.faceVertexUvs[0][0][0].x = leftPct;
+                  this._geom.faceVertexUvs[0][0][0].y = topPct;
+                  this._geom.faceVertexUvs[0][0][1].x = leftPct;
+                  this._geom.faceVertexUvs[0][0][1].y = bottomPct;
+                  this._geom.faceVertexUvs[0][0][2].x = rightPct;
+                  this._geom.faceVertexUvs[0][0][2].y = topPct;
+
+                  this._geom.faceVertexUvs[0][1][0].x = leftPct;
+                  this._geom.faceVertexUvs[0][1][0].y = bottomPct;
+                  this._geom.faceVertexUvs[0][1][1].x = rightPct;
+                  this._geom.faceVertexUvs[0][1][1].y = bottomPct;
+                  this._geom.faceVertexUvs[0][1][2].x = rightPct;
+                  this._geom.faceVertexUvs[0][1][2].y = topPct;
+
+                  this._geom.uvsNeedUpdate = true;
+
+                  return this;
+
+                  /*for(var i = 0; i < geometry.faces.length / 2; i++) {
+                      geometry.faceVertexUvs[ 0 ].push( [
+                          new THREE.Vector2( 0, 0 ),
+                          new THREE.Vector2( 0, 1 ),
+                          new THREE.Vector2( 1, 0 ),
+                      ] );
+                      geometry.faces[ 2 * i ].materialIndex = i;
+
+                      geometry.faceVertexUvs[ 0 ].push( [
+                          new THREE.Vector2( 0, 1 ),
+                          new THREE.Vector2( 1, 1 ),
+                          new THREE.Vector2( 1, 0 ),
+                      ] );
+                      geometry.faces[ 2 * i + 1 ].materialIndex = i;
+
+                      materials.push( createTexture( i ) );
+                  }*/
+              },
+
+              // 设置粒子的状态，pct值为粒子的起始状态和终止状态的中间位置，取值0-1之间，用于渲染循环
+              updatePos: function(pct) {
+                  var targetPct;
+
+                  if (pct < this._outPos.startPct) {
+                      targetPct = 0;
+                  } else {
+                      targetPct = (pct - this._outPos.startPct) / (1 - this._START_MOVE_PCT);
+                  }
+
+                  targetPct < 0 && (targetPct = 0);
+                  targetPct > 1 && (targetPct = 1);
+                  this._mesh.position.x = this._inPos.x + (this._outPos.x - this._inPos.x) * targetPct;
+                  this._mesh.position.y = this._inPos.y + (this._outPos.y - this._inPos.y) * targetPct;
+                  this._mesh.position.z = this._inPos.z + (this._outPos.z - this._inPos.z) * targetPct;
+                  this._mesh.rotation.y = this._outPos.rotate * targetPct;
+                  this._mat.opacity = (1 - targetPct);
+
+                  return this;
+              },
+
+              // 设置贴图，轻量级重置，只改变贴图，不改变其他。
+              updateMap: function(map) {
+                  this._mat.map = map;
+                  this._mat.needsUpdate = true;
+                  return this;
+              },
+
+              // 设置粒子空间位置和贴图，重量级重置
+              reset: function(map, leftPct, rightPct, bottomPct, topPct, posX, posY, posZ, currPct) {
+                  // 设置粒子贴图、贴图uv映射位置
+                  this.updateMap(map);
+                  this.setUV(leftPct, rightPct, bottomPct, topPct);
+
+                  // 设置粒子初始状态和最终状态
+                  this.setRandPos(posX, posY, posZ);
+
+                  // 设置粒子的初始状态
+                  this.updatePos(currPct);
+
+                  return this;
+              }
+          };
+
+          // 粒子云对象
+          function PicCloud(scene, itemSize) {
+              this._itemSize = itemSize;
+
+              // 粒子对象池
+              this._items = [];
+              // 用来储存动画结束的回调函数
+              this._doneCbk = [null, null];
+
+              // 初始化对象池
+              for (var i = 0; i < this._ITEM_MAX_COUNT; ++i) {
+                  this._items.push(new PicPlaneItem(scene, itemSize, itemSize));
+              }
+
+              return this;
+          }
+          PicCloud.prototype = {
+              _ITEM_MAX_COUNT : 800,
+
+              show: function(speed, callback) {
+                  this._doneCbk[0] = callback;
+                  return this._toPct(0, speed);
+              },
+
+              hide: function(speed, callback) {
+                  this._doneCbk[1] = callback;
+                  return this._toPct(1, speed);
+              },
+
+              // 粒子云动画函数
+              _toPct: function(pct, speed) {
+                  var that = this;
+                  this._needUpdate = true;
+
+                  new TWEEN.Tween(this).to({
+                      _currPct : pct
+                  }, speed).easing(TWEEN.Easing.Cubic.InOut).start();
+
+                  return this;
+              },
+
+              update: function() {
+                  if (this._needUpdate) {
+                      for (var i = this._itemCount; i--;) {
+                          this._items[i].updatePos(this._currPct);
+                      }
+
+                      if (this._currPct === 0 || this._currPct === 1) {
+                          this._needUpdate = false;
+
+                          if (this._doneCbk[this._currPct]) {
+                              this._doneCbk[this._currPct]();
+                              this._doneCbk[this._currPct] = null;
+                          }
+                      }
+                  }
+
+                  return this;
+              },
+
+              // 在尺寸不变的情况下更新贴图
+              resetMap: function(map) {
+                  for (var i = this._itemCount; i--;) {
+                      this._items[i].updateMap(map);
+                  }
+
+                  return this;
+              },
+
+              // 注意，在此时，面片粒子的尺寸是固定的，要手动保证map的尺寸可以完整覆盖所有面片
+              // wCount － x轴方向粒子总数 hCount － y轴方向的粒子总数
+              reset: function(map, wCount, hCount) {
+                  // 需要渲染的粒子总数
+                  this._itemCount = wCount * hCount;
+                  // 当权渲染位置
+                  this._currPct = 1;
+                  // 是否需要更新画布
+                  this._needUpdate = false;
+
+                  var baseX = this._itemSize * (1 - wCount) / 2,
+                      baseY = this._itemSize * (1 - hCount) / 2;
+
+                  // 初始化粒子
+                  for (var i = 0; i < wCount; ++i) {
+                      for (var j = 0; j < hCount; ++j) {
+                          this._items[i * hCount + j].reset(
+                              map,
+                              i / wCount, (i + 1) / wCount,
+                              j / hCount, (j + 1) / hCount,
+                              baseX + this._itemSize * i,
+                              baseY + this._itemSize * j,
+                              this._currPct);
+                      }
+                  }
+
+                  // 将粒子池中的多余粒子移除出屏幕
+                  for (var i = this._itemCount; i < this._ITEM_MAX_COUNT; ++i) {
+                      this._items[i].reset(null, 0, 0, 0, 0, -10000, -10000, -10000);
+                  }
+
+                  return this;
+              }
+          };
+
+          var textureLoader = new THREE.TextureLoader();
+          textureLoader.crossOrigin = true;
+
+          var TEXTURE_ROOT = './textures/pieces/';
+
+          // 页面控制对象
+          var pagePic = {
+              _SPEED  : 1500,
+              _CAMDEG : Math.PI / 2,
+
+              // 序列帧贴图
+              _enableAni : false,
+              _showAni : false,
+              _currAni : 0,
+              _aniMaps : [],
+
+              _genAniMapList: function() {
+                  for (var i = 0; i < 10; ++i) {
+                      this._aniMaps.push(textureLoader.load(TEXTURE_ROOT + '0' + i + '.png'));
+                  }
+                  for (var i = 10; i < 20; ++i) {
+                      this._aniMaps.push(textureLoader.load(TEXTURE_ROOT + i + '.png'));
+                  }
+                  return this;
+              },
+
+              // 贴图
+              _maps : [
+                  textureLoader.load(TEXTURE_ROOT + 'logo.png'),
+                  textureLoader.load(TEXTURE_ROOT + 'pic-1.png'),
+                  textureLoader.load(TEXTURE_ROOT + '18.png'),
+                  textureLoader.load(TEXTURE_ROOT + 'pic-2.png'),
+                  textureLoader.load(TEXTURE_ROOT + 'pic-3.png')
+              ],
+
+              _pieceSize : null,
+              _mapSizes  : null,
+
+              _picInfo : [{
+                  pieceSize : 40,
+                  mapSizes  : [14, 14, 18, 5, 9, 9, 18, 5, 18, 5],
+              }, {
+                  pieceSize : 20,
+                  mapSizes  : [28, 28, 35, 10, 18, 18, 35, 10, 35, 10],
+              }],
+
+              enableAni: function() {
+                  this._enableAni = true;
+                  return this;
+              },
+
+              showItem: function(callback) {
+                  var that = this;
+                  this._cloud.show(this._SPEED, function() {
+                      callback && callback();
+                  });
+                  setTimeout(function() {
+                      cameraObj.rotateFromTo(-that._CAMDEG, 1300, 0, 1200, that._SPEED)
+                  }, 500);
+                  return this;
+              },
+
+              hideItem: function(callback) {
+                  var that = this;
+                  cameraObj.rotateFromTo(0, 1200, this._CAMDEG, 1300, this._SPEED);
+                  setTimeout(function() {
+                      that._cloud.hide(that._SPEED, function() {
+                          callback && callback();
+                      });
+                  }, 500);
+                  return this;
+              },
+
+              switchTo: function(index) {
+                  this._cloud.reset(
+                      this._maps[index],
+                      this._mapSizes[index * 2],
+                      this._mapSizes[index * 2 + 1]
+                  );
+                  console.log('pieceSize, wCount, hCount:',
+                      this._pieceSize,
+                      this._mapSizes[index * 2],
+                      this._mapSizes[index * 2 + 1]);
+
+                  if (index === 2) {
+                      this._showAni = true;
+                  } else {
+                      this._showAni = false;
+                  }
+
+                  return this;
+              },
+
+              init: function(canvasId, scene) {
+                  var that = this;
+                  var type = (/mobile/i.test(window.navigator.userAgent)) ? 0 : 1;
+
+                  this._pieceSize = this._picInfo[type].pieceSize;
+                  this._mapSizes  = this._picInfo[type].mapSizes;
+
+                  // 粒子云对象
+                  this._cloud = new PicCloud(scene, this._pieceSize).reset(null, 0, 0);
+
+                  this._genAniMapList();
+
+                  rendererObj.onRender(function() {
+                      TWEEN.update();
+                      cameraObj.update();
+                      that._cloud.update();
+
+                      if (that._showAni) {
+                          if (that._enableAni) {
+                              that._cloud.resetMap(that._aniMaps[Math.floor(that._currAni++ / 2) %
+                              that._aniMaps.length]);
+                          } else {
+                              that._cloud.resetMap(that._maps[2]);
+                          }
+                      }
+
+                  }).start(canvasId, scene, cameraObj.init().getCamera());
+
+                  return this;
+              }
+          };
+
+          var scene = new THREE.Scene();
+          scene.add(new THREE.AmbientLight(0xffffff));
+
+          pagePic.init('stage', scene);
+
+          if (!/mobile/i.test(navigator.userAgent)) {
+              pagePic.enableAni();
+          }
+
+          window.app || (window.app = {});
+          window.app.pagePic = pagePic;
+
+      }());
+
+      var _curr = 0;
+      var _busy = false;
+      var _TOTAL = 5;
+      document.body.addEventListener('mousewheel', function(e) {
+          var delta = e.deltaY;
+          if (delta !== 0) {
+              if (delta < 0) {
+                  return switchTo(_curr - 1);
+              } else {
+                  return switchTo(_curr + 1);
+              }
+          }
+
+          return false;
+      });
+
+      function switchTo(index) {
+          var _pic  = window.app.pagePic;
+          index = (index + _TOTAL) % _TOTAL;
+          if (!_busy) {
+              _busy = true;
+              _pic.hideItem(function() {
+                  _pic.switchTo(index).showItem(function() {
+                      _curr = index;
+                      _busy = false;
+                  });
+              });
+          }
+      }
+      switchTo(_curr)
+  </script>
+</body>
+</html>

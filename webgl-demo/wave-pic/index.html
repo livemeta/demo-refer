@@ -1,0 +1,63 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<div class="award__preview-list js-award-list" style="display: none;">
+    <img src="award/award-item1.jpg">
+
+    <img src="award/award-item2.jpg">
+
+    <img src="award/award-item3.jpg">
+
+    <img src="award/award-item4.jpg">
+
+    <img src="award/award-item5.jpg">
+
+    <img src="award/award-item6.jpg">
+
+    <img src="award/award-item7.jpg">
+
+    <img src="award/award-item8.jpg">
+
+    <img src="award/award-item9.jpg">
+</div>
+
+<div class="award__preview-stage js-award-stage" style="width: 1070px; height: 572px;margin: 0 auto;border: 1px solid green;">
+</div>
+<input type="button" value="Switch" id="switch" style="display: block;width:100px;height:40px;margin: 0 auto;" />
+
+<script src="./three-r82.min.js"></script>
+<script src="./jquery(mixNIE).1.11.js"></script>
+<script src="js/common/support.js"></script>
+<script src="js/common/util.js"></script>
+<script src="js/app/wave.js"></script>
+<script>
+    var $stage = $('body').find('.js-award-stage');
+
+    var ctrl = this;
+    var $list = $('body').find('.js-award-list img');
+    ctrl.awardWave = new Wave(
+        $stage,
+        $.map($list, function (el) {
+            return $(el).attr('src');
+        }),
+        $stage.width(),
+        $stage.height()
+    );
+    ctrl.index = 0;
+    var $switch = $('#switch').click(function () {
+        ctrl.index = (ctrl.index + 1) % $list.length;
+        ctrl.awardWave.switchTo(ctrl.index++);
+    });
+    window.onload = function () {
+        $switch.click();
+    };
+</script>
+</body>
+</html>

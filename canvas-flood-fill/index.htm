@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+    <meta charset="utf-8" />
+    <title>bears涂色</title>
+    <script>
+        (function (width) {
+			var userAgent = navigator.userAgent.toLowerCase();
+			isiOS = userAgent.indexOf("ipad") > -1 || userAgent.indexOf("iphone") > -1;
+			var dpr = window.devicePixelRatio;
+			var wWidth = window.screen.width || window.screen.availWidth;
+			var dpi = width / wWidth * dpr * 160;
+			metaContent = (isiOS ? "width=" + width : "target-densitydpi=" + dpi + ", width=" + width + ", initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0");
+			var head = document.getElementsByTagName("head");
+			var meta = document.createElement("meta");
+			meta.name = "viewport";
+			meta.content = metaContent;
+			head.length > 0 && head[head.length - 1].appendChild(meta)
+		}(750));
+    </script>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<body>
+    <div id="container">
+		<section id="balloon" class="page">
+			<section id="drawBalloon" class="page">
+				<div id="draw-wrap">
+					<canvas id="canvas" width="649" height="465"></canvas>
+					<div id="wire"></div>
+				</div>
+				<ul id="colors">
+					<li>0050a1</li>
+					<li>02a1e3</li>
+					<li>abdced</li>
+					<li>ef790b</li>
+					<li>f8bc28</li>
+					<li>96c730</li>
+					<li>d3e6ba</li>
+					<li>f79ab5</li>
+					<li>e1147f</li>
+					<li>ffff00</li>
+					<li>a1488e</li>
+					<li>ee0000</li>
+					<li>4d9b46</li>
+					<li>ffffff</li>
+				</ul>
+			</section>
+		</section>
+    </div>
+
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/floodFillLinear.js"></script>
+    <script src="js/index.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" type="image/png" href="https://cpwebassets.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png">
+  <meta name="apple-mobile-web-app-title" content="CodePen">
+  <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
+  <link rel="mask-icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-8f3771b1072e3c38bd662872f6b673a722f4b3ca2421637d5596661b4e2132cc.svg" color="#111">
+  <title>CodePen - Modern Google Loader in Pure CSS</title>
+  <style>
+    .loader {
+      position: relative;
+      margin: 0 auto;
+      width: 100px;
+    }
+    .loader:before {
+      content: "";
+      display: block;
+      padding-top: 100%;
+    }
+
+    .circular {
+      -webkit-animation: rotate 2s linear infinite;
+      animation: rotate 2s linear infinite;
+      height: 100%;
+      transform-origin: center center;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+
+    .path {
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+      -webkit-animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+      animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+      stroke-linecap: round;
+    }
+
+    @-webkit-keyframes rotate {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes rotate {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    @-webkit-keyframes dash {
+      0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+      }
+      50% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -35px;
+      }
+      100% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -124px;
+      }
+    }
+    @keyframes dash {
+      0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+      }
+      50% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -35px;
+      }
+      100% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -124px;
+      }
+    }
+    @-webkit-keyframes color {
+      100%, 0% {
+        stroke: #d62d20;
+      }
+      40% {
+        stroke: #0057e7;
+      }
+      66% {
+        stroke: #008744;
+      }
+      80%, 90% {
+        stroke: #ffa700;
+      }
+    }
+    @keyframes color {
+      100%, 0% {
+        stroke: #d62d20;
+      }
+      40% {
+        stroke: #0057e7;
+      }
+      66% {
+        stroke: #008744;
+      }
+      80%, 90% {
+        stroke: #ffa700;
+      }
+    }
+    body {
+      background-color: #eee;
+    }
+
+    .showbox {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 5%;
+    }
+  </style>
+  <style>
+    .pre-loader{position:absolute;top:calc(50% - 32px);left:calc(50% - 32px);width:64px;height:64px;border-radius:50%;perspective:800px}
+    .pre-loader .inner{position:absolute;box-sizing:border-box;width:100%;height:100%;border-radius:50%}
+    .pre-loader .inner.one{left:0;top:0;-webkit-animation:rotate-one 1s linear infinite;animation:rotate-one 1s linear infinite;border-bottom:3px solid #bc9048}
+    .pre-loader .inner.two{right:0;top:0;-webkit-animation:rotate-two 1s linear infinite;animation:rotate-two 1s linear infinite;border-right:3px solid #74aeff}
+    .pre-loader .inner.three{right:0;bottom:0;-webkit-animation:rotate-three 1s linear infinite;animation:rotate-three 1s linear infinite;border-top:3px solid #caef74}
+    @keyframes rotate-one{
+      0%{-webkit-transform:rotateX(35deg) rotateY(-45deg) rotateZ(0);transform:rotateX(35deg) rotateY(-45deg) rotateZ(0)}
+      100%{-webkit-transform:rotateX(35deg) rotateY(-45deg) rotateZ(360deg);transform:rotateX(35deg) rotateY(-45deg) rotateZ(360deg)}
+    }
+    @keyframes rotate-two{
+      0%{-webkit-transform:rotateX(50deg) rotateY(10deg) rotateZ(0);transform:rotateX(50deg) rotateY(10deg) rotateZ(0)}
+      100%{-webkit-transform:rotateX(50deg) rotateY(10deg) rotateZ(360deg);transform:rotateX(50deg) rotateY(10deg) rotateZ(360deg)}
+    }
+    @keyframes rotate-three{
+      0%{-webkit-transform:rotateX(35deg) rotateY(55deg) rotateZ(0);transform:rotateX(35deg) rotateY(55deg) rotateZ(0)}
+      100%{-webkit-transform:rotateX(35deg) rotateY(55deg) rotateZ(360deg);transform:rotateX(35deg) rotateY(55deg) rotateZ(360deg)}
+    }
+  </style>
+</head>
+
+<body translate="no">
+<div class="showbox">
+  <div class="loader">
+    <svg class="circular" viewBox="25 25 50 50">
+      <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
+    </svg>
+  </div>
+</div>
+
+<div class="pre-loader" id="pre-loader">
+  <div class="inner one"></div>
+  <div class="inner two"></div>
+  <div class="inner three"></div>
+</div>
+
+</body></html>

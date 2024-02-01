@@ -1,0 +1,85 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body onload="init();">
+<div id="stage" style="width: 600px;height: 600px;margin: 0 auto;
+    border:1px solid green;background:gainsboro;"></div>
+
+<script src="../lib/three.js"></script>
+<script>
+    var renderer, camera, scene, light, cube, width, height;
+    function init() {
+        var stage = document.getElementById('stage');
+        width = stage.clientWidth;
+        height = stage.clientHeight;
+
+        renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true,
+        });
+        renderer.setSize(width, height);
+        renderer.setClearColor(0x000000, 0);
+        stage.appendChild(renderer.domElement);
+
+        initCamera();
+        initScene();
+        initLight();
+        initObject();
+        renderer.clear();
+        renderer.render(scene, camera);
+    }
+
+    function initCamera() {
+        camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+        camera.position.set(0, 1000, 0);
+        camera.up.x = 0;
+        camera.up.y = 0;
+        camera.up.z = 1;
+        camera.lookAt({ x: 0, y: 0, z: 0 });
+    }
+
+    function initScene() {
+        scene = new THREE.Scene();
+    }
+
+    function initLight() {
+        light = new THREE.DirectionalLight(0xFFFFFF, 1.0, 1);
+        light.position.set(1000, 100, 200);
+    }
+
+    function initObject() {
+        var geometry = new THREE.Geometry();
+        var material = new THREE.LineBasicMaterial({
+            vertexColors: THREE.VertexColors,  // 使用顶点颜色
+            opacity: .2,
+        });
+
+        // 线的材质可以由2点的颜色决定
+        var color1 = new THREE.Color(0x444444);
+        var color2 = new THREE.Color(0xFF0000);
+        var p1 = new THREE.Vector3(-500, 0, 0);
+        var p2 = new THREE.Vector3(500, 0, 0);
+        geometry.vertices.push(p1);
+        geometry.vertices.push(p2);
+        geometry.colors.push(color1, color2);
+
+        for (var i = 0; i < 20; i++) {
+            var line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, opacity: .2 }));
+            line.position.z = i * 50 - 500;
+            scene.add(line);
+
+            var line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, opacity: .2 }));
+            line.position.x = i * 50 - 500;
+            line.rotation.y = Math.PI / 2;
+            scene.add(line);
+        }
+    }
+</script>
+
+</body>
+</html>

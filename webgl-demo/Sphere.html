@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<style>
+		#container{
+			width: 1400px;
+			height: 600px;
+			background-color: #eee;
+		}
+	</style>
+</head>
+<body>
+	<div id="container"></div>
+
+	<script src="lib/threejs/three.js" charset="utf-8"></script>
+	<script>
+		var container;
+		var renderer, camera, scene;
+		init();
+
+		function init() {
+			// 设置渲染器
+			container = document.getElementById('container');
+			var width = container.clientWidth;
+			var height = container.clientHeight;
+			// renderer = new THREE.WebGLRenderer({ antialias: false });
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setSize(width, height);
+			container.appendChild(renderer.domElement);
+			renderer.setClearColorHex(0xffffff, 1.0);
+
+			// 设置摄像机
+			camera = new THREE.PerspectiveCamera(45, width / height, 1, 5000);
+			camera.position.set(0, 50, 100);
+			camera.up.x = 0;
+			camera.up.y = 1;
+			camera.up.z = 0;
+			camera.lookAt({ x: 0, y: 0, z: 0 });
+
+			// 设置场景
+			scene = new THREE.Scene();
+
+			// 设置光源
+			var light = new THREE.DirectionalLight(0xffffff, 1.0, 0);
+			light.position.set(200, 200, 200);
+			scene.add(light);
+
+			// 设置物体
+			var sphere = new THREE.Mesh(
+				new THREE.SphereGeometry(20, 20),
+				new THREE.MeshLambertMaterial({ color: 0x008000 })
+			);
+			scene.add(sphere);
+			sphere.position.set(0, 0, 0);
+
+			// var cube = new THREE.Mesh(
+			// 	new THREE.CubeGeometry(100, 100, 1),
+			// 	new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+			// );
+			// scene.add(cube);
+			// cube.position.set(0, 0, 0);
+
+			renderer.clear();
+			renderer.render(scene, camera);
+		}
+	</script>
+</body>
+</html>

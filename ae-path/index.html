@@ -1,0 +1,22 @@
+<!DOCType html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AE 路径动画</title>
+</head>
+<body>
+<div id="animation-container" style="width:100%"></div>
+<script src="bodymovin.js"></script>
+<script>
+    var animation = bodymovin.loadAnimation({
+        container: document.getElementById('animation-container'),
+        // renderer: 'canvas', //svg、html
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'data.json'
+        // path: 'uno-data.json'
+    })
+</script>
+</body>
+</html>

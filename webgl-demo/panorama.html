@@ -1,0 +1,180 @@
+<html>
+<head>
+  <style>
+    body {
+      background-color: #000000;
+      margin: 0px;
+      overflow: hidden;
+    }
+    #info {
+      position: absolute;
+      top: 0px;
+      width: 100%;
+      color: #ffffff;
+      padding: 5px;
+      font-family:Monospace;
+      font-size:13px;
+      font-weight: bold;
+      text-align:center;
+    }
+    a {
+      color: #ffffff;
+    }
+
+    #opt-list {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      position: absolute;
+      margin: 30px 0 0;
+      z-index: 1;
+      list-style: none;
+    }
+    #opt-list li {
+      margin: 0 5px;
+    }
+    #opt-list img {
+      width: 100px;
+      height: 80px;
+      object-fit: contain;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <ul id="opt-list">
+    <li><img src="textures/room.jpg" /></li>
+    <li><img src="textures/house.jpg" /></li>
+    <li><img src="textures/castle.jpg" /></li>
+  </ul>
+  <div id="info">
+    <a href="http://threejs.org" target="_blank" rel="noopener">three.js webgl</a> - equirectangular panorama demo. photo by <a href="http://www.flickr.com/photos/jonragnarsson/2294472375/" target="_blank" rel="noopener">Jón Ragnarsson</a>.<br />
+    drag equirectangular texture into the page.
+  </div>
+  <div id="container"></div>
+  <script src="lib/three.js" charset="utf-8"></script>
+  <script>
+    document.getElementById('opt-list').addEventListener('click', function (evt) {
+      const src = evt.target.getAttribute('src')
+      setTexture(src)
+    })
+
+    var scene, camera, renderer
+    var isUserInteracting = false
+    var mouseDownX = 0, mouseDownY = 0,
+    lon = 0, mouseDownLon = 0,
+    lat = 0, mouseDownLat = 0,
+    phi = 0, mouseDownPhi = 0;
+
+    init('textures/castle.jpg')
+    animate()
+
+    function setTexture(texture) {
+      // scene
+      scene = new THREE.Scene()
+
+      // geometry
+      var geometry = new THREE.SphereBufferGeometry(500, 60, 40)
+      geometry.scale(-1, 1, 1)
+      var material = new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load(texture)
+      })
+      mesh = new THREE.Mesh(geometry, material)
+      scene.add(mesh)
+    }
+
+    function init(texture) {
+      var container, mesh
+      container = document.getElementById('container')
+
+      // renderer
+      renderer = new THREE.WebGLRenderer()
+      renderer.setPixelRatio(window.devicePixelRatio)
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      container.appendChild(renderer.domElement)
+
+      // camera
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100)
+      camera.target = new THREE.Vector3(0, 0, 0)
+
+      // geometry
+      setTexture(texture)
+
+      // interaction
+      document.addEventListener('mousedown', function (evt) {
+        evt.preventDefault()
+
+        isUserInteracting = true
+        mouseDownX = evt.clientX
+        mouseDownY = evt.clientY
+
+        mouseDownLon = lon
+        mouseDownLat = lat
+      }, false)
+      document.addEventListener('mousemove', function (evt) {
+        if (isUserInteracting) {
+          lon = (mouseDownX - evt.clientX) * 0.1 + mouseDownLon
+          lat = (evt.clientY - mouseDownY) * 0.1 + mouseDownLat
+        }
+      }, false)
+      document.addEventListener('mouseup', function (evt) {
+        isUserInteracting = false
+      }, false)
+      document.addEventListener('mousewheel', function (evt) {
+        camera.fov += evt.deltaY * 0.05
+        camera.updateProjectionMatrix()
+      }, false)
+
+      document.addEventListener('dragenter', function (evt) {
+        document.body.style.opacity = 0.5
+      }, false)
+      document.addEventListener('dragover', function (evt) {
+        evt.preventDefault()
+        evt.dataTransfer.dropEffect = 'copy'
+      }, false)
+      document.addEventListener('dragleave', function (evt) {
+        document.body.style.opacity = 1
+      }, false)
+      document.addEventListener('drop', function (evt) {
+        evt.preventDefault()
+
+        var reader = new FileReader()
+        reader.addEventListener('load', function (evt) {
+          material.map.image.src = evt.target.result
+          material.map.needsUpdate = true
+        })
+        reader.readAsDataURL(event.dataTransfer.files[0])
+
+        document.body.style.opacity = 1
+      }, false)
+
+      window.addEventListener('resize', onWindowResize, false)
+    }
+    function onWindowResize(evt) {
+      camera.aspect = window.innerWidth / window.innerHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(window.innerWidth, window.innerHeight)
+    }
+
+    function animate() {
+      requestAnimationFrame(animate)
+      update()
+    }
+    function update() {
+      if (isUserInteracting === false) {
+        lon += 0.1
+      }
+      lat = Math.max(-85, Math.min(85, lat))
+      phi = THREE.Math.degToRad(90 - lat)
+      theta = THREE.Math.degToRad(lon)
+
+      camera.target.x = 500 * Math.sin(phi) * Math.cos(theta)
+      camera.target.y = 500 * Math.cos(phi)
+      camera.target.z = 500 * Math.sin(phi) * Math.sin(theta)
+      camera.lookAt(camera.target)
+
+      renderer.render(scene, camera)
+    }
+  </script>
+</body>
+</html>

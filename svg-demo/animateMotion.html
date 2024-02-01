@@ -1,0 +1,45 @@
+<!DOCTYPE>
+<html>
+<style>
+	body {
+		/*background: #000;*/
+	}
+	@keyframes dash {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+	#helix{
+		stroke-dasharray:2006;  /*2006为螺旋线的长度*/
+		stroke-dashoffset:2006;
+		animation: dash 6s linear forwards;  /*蒙版动画的速率和时间与飞机路径动画保持一致*/
+		animation-delay:0.2s; /*为了让飞机稍微领先，设置了蒙版动画0.2秒的延迟*/
+	}
+</style>
+
+<body>
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="595.28px" height="841.89px" viewBox="0 0 595.28 841.89" enable-background="new 0 0 595.28 841.89" xml:space="preserve">
+	<defs>
+		<!--<g>-->
+			<path id="path" fill="none" stroke-width="16" stroke-linecap="round" d="M66.9,517 c0,0-37.8-194,125.1-161.9S427.6,371.5,350,205.7S439.3,23.4,544,62.2" />
+			<!--<path id="path" fill="none" stroke-width="12" stroke-linecap="round" stroke-miterlimit="10" d="M349.365,151.645c147,49,25,35,25,35 s-104.001-38-108.001,54s-32,192-79,121s120.282-152,242.642-76"/>-->
+		<!--</g>-->
+	</defs>
+
+	<mask id="helix">
+		<!--蒙版调用定义的描边动画helix，d=""包含部分为螺旋线的路径-->
+		<use xlink:href="#path" stroke="#ffffff"></use>
+	</mask>
+	<use mask="url(#helix)" xlink:href="#path" stroke="#78EADF" stroke-dasharray="10,30"></use>
+
+	<circle fill="#F8B62D" r="20">
+		<animateMotion dur="3s" fill="freeze" rotate="auto">
+			<mpath xlink:href="#path" />
+		</animateMotion>
+		<animateTransform dur="3s" attributeName="transform"  fill="freeze" type="scale" from="1 1" to="0.5 0.5" />
+	</circle>
+</svg>
+
+
+</html>

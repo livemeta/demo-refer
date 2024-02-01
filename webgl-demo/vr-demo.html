@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<title>Cardboard Example</title>
+	<style>
+		body {
+			margin: 0;
+			overflow: hidden;
+		}
+		#container {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
+	</style>
+</head>
+<body>
+
+</body>
+	<div id="container"></div>
+
+	<script src="lib/threejs/three.js"></script>
+	<script src="lib/threejs/StereoEffect.js"></script>
+	<script src="lib/threejs/DeviceOrientationControls.js"></script>
+	<script src="lib/threejs/OrbitControls.js"></script>
+	<script>
+		var camera, scene, renderer;
+		var effect, controls;
+		var element, container;
+
+		var clock = new THREE.Clock();
+
+		init();
+		animate();
+
+		function init() {
+			renderer = new THREE.WebGLRenderer();
+			element = renderer.domElement;
+			container = document.getElementById('container');
+			container.appendChild(element);
+
+			// 建立场景、立体效果
+			effect = new THREE.StereoEffect(renderer);
+			scene = new THREE.Scene();
+
+			// 添加摄像机
+			camera = new THREE.PerspectiveCamera(90, 1, 0.001, 700);
+			camera.position.set(0, 10, 0);
+			scene.add(camera);
+
+			// 设置镜头轨道控制
+			controls = new THREE.OrbitControls(camera, element);
+			controls.rotateUp(Math.PI / 4);
+			controls.target.set(
+				camera.position.x + 0.1,
+				camera.position.y,
+				camera.position.z
+			);
+			controls.noZoom = true;
+			controls.noPan = true;
+
+			window.addEventListener('deviceorientation', setOrientationControls);
+
+			// 添加光照
+			var light = new THREE.HemisphereLight(0x777777, 0x000000, 0.6);
+			scene.add(light);
+
+			// 设置纹理图片材质
+			var texture = THREE.ImageUtils.loadTexture('textures/patterns/checker.png');
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat = new THREE.Vector2(50, 50);
+			texture.anisotropy = renderer.getMaxAnisotropy();
+
+			var material = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0xffffff,
+				shininess: 20,
+				shading: THREE.FlatShading,
+				map: texture
+			});
+
+			// 添加纹理
+			var geometry = new THREE.PlaneGeometry(1000, 1000);
+			var mesh = new THREE.Mesh(geometry, material);
+			mesh.rotation.x = -Math.PI / 2;
+			scene.add(mesh);
+
+			window.addEventListener('resize', resize, false);
+			setTimeout(resize, 1);
+		}
+
+		function setOrientationControls(e) {
+			if (!e.alpah) {
+				return;
+			}
+
+			controls = new THREE.DeviceOrientationControls(camera, true);
+			controls.connect();
+			controls.update();
+			element.addEventListener('click', fullscreen, false);
+
+			window.removeEventListener('deviceorientation', setOrientationControls, true);
+		}
+
+		function fullscreen() {
+			if (container.requestFullscreen) {
+				container.requestFullscreen();
+			} else if (container.msRequestFullscreen) {
+				container.msRequestFullscreen();
+			} else if (container.mozRequestFullscreen) {
+				container.mozRequestFullscreen();
+			} else if (container.webkitRequestFullscreen) {
+				container.webkitRequestFullscreen();
+			}
+		}
+
+		function resize() {
+			var width = container.offsetWidth;
+			var height = container.offsetHeight;
+
+			camera.aspect = width / height;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize(width, height);
+			effect.setSize(width, height);
+		}
+
+		function animate(t) {
+			requestAnimationFrame(animate);
+
+			update(clock.getDelta());
+			render(clock.getDelta());
+		}
+		function update(dt) {
+			resize();
+			camera.updateProjectionMatrix();
+			controls.update(dt);
+		}
+		function render(dt) {
+			effect.render(scene, camera);
+		}
+	</script>
+</html>

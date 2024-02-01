@@ -1,0 +1,233 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #preview-list {
+            overflow: hidden;
+        }
+        #preview-list li {
+            float: left;
+            list-style: none;
+            cursor: pointer;
+        }
+        #preview-list li img {
+            width: 60px;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://pixijs.download/dev/docs/PIXI.Application.html#start" target="_blank">PixiJS Document</a>
+    <ul id="preview-list"></ul>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
+<!--<script src="pixi.min.js"></script>-->
+<script>
+  const duration = 1000;
+  const app = new PIXI.Application();
+
+  // The application will create a canvas element for you that you
+  // can then insert into the DOM
+  document.body.appendChild(app.view)
+  app.stage.interactive = true;
+
+  renderPreviews()
+
+  const commonVertexShader = `
+precision highp float;
+attribute vec2 aVertexPosition;
+attribute vec2 aTextureCoord;
+attribute vec4 aColor;
+uniform mat3 projectionMatrix;
+uniform mat3 filterMatrix;
+uniform float resolution;
+varying vec2 vTextureCoord;
+varying vec2 vFilterCoord;
+// varying vec4 vColor;
+void main(void){
+gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+vFilterCoord = ( filterMatrix * vec3( aTextureCoord, 1.0)  ).xy / resolution;
+vTextureCoord = aTextureCoord ;
+//  vColor = vec4(aColor.rgb * aColor.a, aColor.a);
+}`;
+
+  const crossfadeShader = `
+    precision mediump float;
+uniform sampler2D previousTexture;
+uniform sampler2D uSampler;
+uniform float progress;
+varying vec2 vTextureCoord;
+varying vec2 vFilterCoord;
+void main()
+{
+vec4 col = texture2D(previousTexture, vFilterCoord);
+vec4 col2 = texture2D(uSampler, vTextureCoord);
+gl_FragColor = mix(col, col2, progress);
+}`;
+
+  const vertexShader = `
+precision highp float;
+attribute vec2 aVertexPosition;
+attribute vec2 aTextureCoord;
+attribute vec4 aColor;
+uniform mat3 projectionMatrix;
+uniform mat3 filterMatrix;
+uniform float resolution;
+varying vec2 vTextureCoord;
+varying vec2 vFilterCoord;
+void main(void){
+gl_Position=vec4((projectionMatrix*vec3(aVertexPosition,1.)).xy,0.,1.);
+vFilterCoord=(filterMatrix*vec3(aTextureCoord,1.)).xy/resolution;
+vTextureCoord=aTextureCoord;
+}`;
+
+  const fragmentShader = `
+precision mediump float;
+uniform sampler2D previousTexture;
+uniform sampler2D uSampler;
+uniform sampler2D ruleTexture;
+uniform float progress;
+uniform float vague;
+varying vec2 vTextureCoord;
+varying vec2 vFilterCoord;
+void main()
+{
+vec4 col = texture2D(previousTexture, vFilterCoord);
+vec4 col2 = texture2D(uSampler, vTextureCoord);
+float b = texture2D(ruleTexture, vec2(vFilterCoord.x, 1.0 - vFilterCoord.y)).b;
+float phase = (1.0 + vague) * progress;
+b = smoothstep(phase - vague, phase, b);
+gl_FragColor = mix(col2, col, b);
+}
+`
+
+  function showTrans(rule, resources) {
+    // This creates a texture from a 'src.png' image
+    const sprite = new PIXI.Sprite(resources.src.texture);
+    // const sprite = new PIXI.Sprite(PIXI.Texture.EMPTY);
+    // sprite.texture = PIXI.utils.TextureCache['src'];
+    sprite.scale.set(0.5, 0.5);
+    sprite.width = app.renderer.width;
+    sprite.height = app.renderer.height;
+    app.stage.addChild(sprite);
+
+    // const oldObj = PIXI.utils.TextureCache['bg'];
+    // const oldTexture = new PIXI.Texture(oldObj.baseTexture);
+    const oldTexture = resources.bg.texture
+
+    const uniforms = {
+      previousTexture: { type: 'sampler2D', value: oldTexture },
+      progress: { type: '1f', value: 0 },
+      currentTime: { type: '1f', value: 0 },
+    };
+    const ruleTexture = resources[rule].texture
+    // const uniformData = Object.assign(uniforms, {
+    //   vague: { type: '1f', value: 0.25 },
+    //   ruleTexture: { type: 'sampler2D', value: ruleTexture },
+    // });
+    let customizedFilter = new PIXI.Filter(
+      vertexShader,
+      fragmentShader,
+      {
+        ...uniforms,
+        vague: { type: '1f', value: 0.25 },
+        ruleTexture: { type: 'sampler2D', value: ruleTexture },
+      },
+    );
+    // if (crossfade = true) {
+    //   customizedFilter = new PIXI.Filter(
+    //     commonVertexShader,
+    //     crossfadeShader,
+    //     uniforms,
+    //   );
+    // }
+
+    customizedFilter.apply = function (filterManager, input, output, clear) {
+      const matrix = new PIXI.Matrix();
+      filterManager.calculateNormalizedScreenSpaceMatrix(matrix);
+
+      this.uniforms.filterMatrix = matrix;
+      // uniformData.filterMatrix = { type: 'mat3', value: matrix };
+      this.uniforms.resolution = PIXI.settings.RESOLUTION;
+      // uniformData.resolution = { type: '1f', value: PIXI.settings.RESOLUTION };
+      filterManager.applyFilter(this, input, output, clear);
+    }
+
+    const renderer = app.renderer;
+    const texture = PIXI.RenderTexture.create(
+      0, 0,
+      PIXI.settings.SCALE_MODE,
+      renderer.resolution
+    );
+    renderer.render(sprite, texture);
+    sprite.filters = [customizedFilter];
+
+    this.startTime = 0;
+    // uniformData.previousTexture.value = oldTexture;
+    customizedFilter.uniforms.previousTexture = oldTexture;
+
+
+    app.ticker.add(delta => {
+      const performance = window.performance || window.Date;
+      const time = performance.now();
+
+      // 第一次执行.update()时初始化
+      if (!this.startTime) {
+        this.startTime = time;
+        return false;
+      }
+
+      // 判断转场是否完成
+      if (time - this.startTime >= duration) {
+        // uniformData.progress.value = 1;
+        customizedFilter.uniforms.progress = 1;
+        // uniformData.currentTime.value = duration;
+        customizedFilter.uniforms.currentTime = duration;
+        app.stop();
+      }
+
+      customizedFilter.uniforms.progress = (time - this.startTime) / duration;
+      customizedFilter.uniforms.currentTime = time - this.startTime;
+
+      // renderer.flush();
+      // renderer.filterManager.pushFilter(sprite, sprite.filters);
+      // sprite.renderWebGL(renderer);
+      // renderer.flush();
+      // renderer.filterManager.popFilter();
+    });
+  }
+
+  function renderPreviews() {
+    app.loader
+      .add('bg', 'bg.png')
+      .add('src', 'fg.jpg')
+
+    const html = []
+    const listElem = document.getElementById('preview-list')
+    for (let i = 1; i <= 40; i++) {
+      html.push(`<li><img src="rule/${i}.png" alt="${i}" /></li>`)
+      app.loader.add('' + i, `rule/${i}.png`)
+    }
+    listElem.innerHTML = html.join('')
+    app.loader.load((loader, resources) => {
+      showTrans(1, resources)
+
+      listElem.onclick = function (e) {
+        const val = e.target.getAttribute('alt')
+
+        const stage = app.stage
+        for (let i = stage.children.length - 1; i >= 0; i--) {
+          console.error('>>>', stage.children[i])
+          stage.removeChild(stage.children[i]);
+        }
+        app.start()
+        showTrans(val, resources)
+      }
+    })
+  }
+</script>
+</body>
+</html>

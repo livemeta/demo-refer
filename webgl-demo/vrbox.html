@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+  html, body {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    color: #fff;
+    margin: 0px;
+    padding: 0;
+    overflow: hidden;
+  }
+  canvas {
+    position: absolute;
+    top: 0;
+  }
+  #buttons {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    background: white;
+  }
+  </style>
+</head>
+
+<body>
+  <div id="buttons">
+    <button id="fullscreen">Fullscreen</button>
+    <button id="vr">VR (WebVR/Mobile only)</button>
+    <button id="reset">Reset</button>
+  </div>
+
+  <script src="lib/three.js" charset="utf-8"></script>
+  <script src="lib/VRControls.js" charset="utf-8"></script>
+  <script src="lib/VREffect.js" charset="utf-8"></script>
+  <script src="lib/webvr-polyfill.js" charset="utf-8"></script>
+  <script>
+    // 渲染器
+    var renderer = new THREE.WebGLRenderer({ antialias: false });
+    renderer.setPixelRatio(Math.floor(window.devicePixelRatio));
+    document.body.appendChild(renderer.domElement);
+
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    // 场景、摄相机、VR相机控制器、VR渲染效果
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000);
+    var controls = new THREE.VRControls(camera);
+    var effect = new THREE.VREffect(renderer);
+    effect.setSize(width, height);
+
+    // 天空背景
+    var boxWidth = 5;
+    // var loader = new THREE.TextureLoader();
+    // loader.load('./img/box.png', onTextureLoaded);
+    var texture = THREE.ImageUtils.loadTexture('./img/box.png');
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(boxWidth, boxWidth);
+    // texture.anisotropy = renderer.getMaxAnisotropy();
+    var geometry = new THREE.BoxGeometry(boxWidth, boxWidth, boxWidth);
+    var material = new THREE.MeshBasicMaterial({
+      map: texture,
+      color: 0x01BE00,
+      side: THREE.BackSide
+    });
+    var skybox = new THREE.Mesh(geometry, material);
+    scene.add(skybox);
+
+    // 物体
+    var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+    var material = new THREE.MeshNormalMaterial();
+    var cube = new THREE.Mesh(geometry, material);
+    cube.position.z = -1;
+    scene.add(cube);
+
+    // 旋转动画
+    var vrDisplay;
+    var lastRender = 0;
+    navigator.getVRDisplays().then(function (displays) {
+      if (displays.length > 0) {
+        vrDisplay = displays[0];
+        vrDisplay.requestAnimationFrame(animate);
+      }
+    });
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('vrdisplaypresentchange', onVRDisplayPresentChange);
+
+    document.getElementById('fullscreen').addEventListener('click', function () {
+      enterFullScreen(renderer.domElement);
+    });
+    document.getElementById('vr').addEventListener('click', function () {
+      vrDisplay.requestPresent([{ source: renderer.domElement }]);
+    });
+    document.getElementById('reset').addEventListener('click', function () {
+      vrDisplay.resetPose();
+    });
+
+    function onTextureLoaded(texture) {
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(boxWidth, boxWidth);
+
+      var geometry = new THREE.BoxGeometry(boxWidth, boxWidth, boxWidth);
+      var material = new THREE.MeshBasicMaterial({
+        map: texture,
+        color: 0x01BE00,
+        side: THREE.BackSide
+      });
+      var skybox = new THREE.Mesh(geometry, material);
+      scene.add(skybox);
+    }
+
+    function animate(timeStamp) {
+      var delta = Math.min(timeStamp - lastRender, 500);
+      lastRender = timeStamp;
+
+      cube.rotation.y += delta * 0.0006;
+      controls.update();
+      effect.render(scene, camera);
+
+      vrDisplay.requestAnimationFrame(animate);
+    }
+
+    function onResize() {
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
+        effect.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    }
+
+    function onVRDisplayPresentChange() {
+      onResize();
+    }
+
+    function enterFullScreen(el) {
+			if (el.requestFullscreen) {
+				el.requestFullscreen();
+			} else if (el.msRequestFullscreen) {
+				el.msRequestFullscreen();
+			} else if (el.mozRequestFullscreen) {
+				el.mozRequestFullscreen();
+			} else if (el.webkitRequestFullscreen) {
+				el.webkitRequestFullscreen();
+			}
+    }
+  </script>
+</body>
+</html>
