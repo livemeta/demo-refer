@@ -77,7 +77,7 @@
 
             function globe(group) {
                 // add earth
-                var texture = THREE.ImageUtils.loadTexture('textures/earth-map.jpg');
+                var texture = THREE.ImageUtils.loadTexture('img/textures/earth-map.jpg');
                 var geometry = new THREE.SphereGeometry(100, 100, 100);
                 var material = new THREE.MeshStandardMaterial({ map: texture });
                 var earth = new THREE.Mesh(geometry, material);

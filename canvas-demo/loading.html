@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Loading with Canvas</title>
+  <style>
+    body {
+      width: 800px;
+      margin: 0 auto;
+      background: #333;
+    }
+
+    canvas {
+      display: block;
+      margin: 20px auto;
+    }
+
+    #range {
+      display: block;
+      margin: 0 auto;
+      margin-top: 20px;
+      width: 400px;
+    }
+  </style>
+</head>
+<body>
+
+  <script>
+    var WIDTH = 600;
+    var HEIGHT = 400;
+    var K = 2;
+    var F = 2;
+    var amplitude = 20;
+
+    var canvas = document.createElement('canvas');
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
+    canvas.style.width = WIDTH + 'px';
+    canvas.style.height = HEIGHT + 'px';
+    document.body.appendChild(canvas);
+
+    var ctx = canvas.getContext('2d');
+
+    var phase = 0;
+    var speed = 0.1;
+    draw(phase);
+
+    function draw(phase) {
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      ctx.save();
+	  
+      drawCircle(ctx);
+      ctx.clip();
+
+      drawText(ctx, '#0088cc', 60);
+      drawText(ctx, '#fff', 60, '#0088cc', phase);
+	  
+      ctx.restore();
+
+      requestAnimationFrame(function () {
+        phase = (phase - speed) % (Math.PI * 64);
+        draw(phase);
+      }, 1000);
+    }
+
+    function drawWave(ctx, color, phase) {
+      ctx.save();
+
+      ctx.moveTo(0, 0);
+      ctx.beginPath();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'transparent';
+
+      var gradient = ctx.createLinearGradient(0, 0, WIDTH, 0);
+      gradient.addColorStop(0, 'transparent');
+      gradient.addColorStop(1, color);
+      ctx.fillStyle = gradient;
+//      ctx.fillStyle = color || '#fff';
+
+      var x, y;
+      for (var i = -K; i < K; i += 0.01) {
+        x = WIDTH * ((i + K) / (K * 2));
+        y = HEIGHT / 2.5 + amplitude * Math.sin(F * i - phase);
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(x, 400);
+      ctx.lineTo(0, 400);
+      ctx.closePath();
+
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawText(ctx, color, fontSize, waveColor, phase) {
+      ctx.save();
+
+      if (waveColor) {
+        drawWave(ctx, waveColor, phase);
+        ctx.clip();
+      }
+
+      ctx.font = fontSize + 'px Georgia';
+      ctx.fillStyle = color;
+
+      var txt = '页面加载中';
+      var wh = ctx.measureText(txt);
+      ctx.fillText(txt, (WIDTH - wh.width) / 2, (HEIGHT - 20) / 2);
+
+      ctx.restore();
+    }
+    
+    function drawCircle(ctx) {
+      ctx.save();
+
+      ctx.beginPath();
+      ctx.strokeStyle = 'transparent';
+      ctx.arc(WIDTH / 2, HEIGHT / 2, HEIGHT / 2, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+  </script>
+</body>
+</html>

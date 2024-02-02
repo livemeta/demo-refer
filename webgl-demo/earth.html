@@ -25,7 +25,7 @@
 <body>
 <a href="http://blog.mastermaps.com/2013/09/creating-webgl-earth-with-threejs.html">the online manual</a>
 <div id="container"></div>
-<script src="lib/three-109/three.min.js"></script>
+<script src="./lib/three-109/three.min.js"></script>
 <script src="./lib/TrackballControls.js"></script>
 <script>
     function init() {
@@ -73,10 +73,10 @@
         var sphere = new THREE.Mesh(
             new THREE.SphereGeometry(0.5, 32, 32),
 			new THREE.MeshPhongMaterial({
-				map: THREE.ImageUtils.loadTexture('./textures/earth_no_clouds_4k.jpg'),
-				bumpMap: THREE.ImageUtils.loadTexture('./textures/earth_elev_bump_4k.jpg'),
+				map: THREE.ImageUtils.loadTexture('./img/textures/earth_no_clouds_4k.jpg'),
+				bumpMap: THREE.ImageUtils.loadTexture('./img/textures/earth_elev_bump_4k.jpg'),
 				bumpScale: 0.005,
-				specularMap: THREE.ImageUtils.loadTexture('./textures/earth_water_4k.png'),
+				specularMap: THREE.ImageUtils.loadTexture('./img/textures/earth_water_4k.png'),
 				specular: new THREE.Color('grey')
 			})
 		)
@@ -85,7 +85,7 @@
 		var clouds = new THREE.Mesh(
 		    new THREE.SphereGeometry(0.503, 32, 32),
 			new THREE.MeshPhongMaterial({
-				map: THREE.ImageUtils.loadTexture('./textures/earth_fair_clouds_4k.png'),
+				map: THREE.ImageUtils.loadTexture('./img/textures/earth_fair_clouds_4k.png'),
 				transparent: true
 			})
 		)
@@ -94,7 +94,7 @@
 		var galaxy = new THREE.Mesh(
             new THREE.SphereGeometry(9, 64, 64),
             new THREE.MeshPhongMaterial({
-                map: THREE.ImageUtils.loadTexture('./textures/galaxy_starfield.png'),
+                map: THREE.ImageUtils.loadTexture('./img/textures/galaxy_starfield.png'),
                 side: THREE.BackSide
             })
 		)

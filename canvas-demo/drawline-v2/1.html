@@ -1,0 +1,656 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<style type="text/css">
+/* CSS 预设*/
+*{ margin:0; padding:0;}
+a{ text-decoration:none; outline:none;}
+body a{outline:none;blr:expression(this.onFocus=this.blur());}
+img{ border:none;}
+ul{ list-style:none;}
+body{ color:#666666; font-size:14px; font-family:"微软雅黑"; background-color:#fff; height:100%; overflow-y:scroll;*overflow-y:inherit;}
+/*html{ height:100%;}*/
+.clearfix:after{ content:"."; display:block; height:0; clear:both; overflow:hidden;}
+.clearfix{ zoom:1;}
+/*clear*/
+.left{float:left;}
+.right{float:right;}
+.clear{clear:both;}
+ /*连线题 css*/
+ .show{ width:800px;cursor:pointer; margin-top:30px; z-index:9;position:relative;} 
+ .canvas{ position:absolute; left:0px; top:0px; z-index:-1;}
+ .backcanvas{ position:absolute; left:0px; top:0px; z-index:-2;}
+ .showleft{ float:left;width:300px; }
+ .showleft .showleftlist{ float:left;width:300px; height:80px;margin:0 0 10px 0;}
+ .showleft .showleftlist .showlistl-ti{float:left;width:218px;border:1px solid #ccc; height:78px;border-right:none;border-radius: 6px 0 0 6px; overflow:hidden; position:relative; text-align:center }
+ .showleft .showleftlist .showitem{ float:left;}
+ 
+ .showright{float:right;width:300px; } 
+ .showright .showrightlist{ float:right;width:300px; height:80px;margin:0 0 10px 0;}
+ .showright .showrightlist .showlistr-ti{float:right;width:218px;border:1px solid #ccc;border-left:none; border-radius: 0 6px 6px 0;  height:78px; overflow:hidden; position:relative; text-align:center; background:#FFF;}
+ .showright .showrightlist .showitem{ float:right;} 
+ 
+ .showleft .showremove{ position:absolute; top:10px; right:10px; background:#C33; width:20px; height:20px;}
+ .showright .showremove{ position:absolute; top:10px; right:10px; background:#C33; width:20px; height:20px;}
+ 
+ .show .showitem{width:78px; height:80px;overflow:hidden;position:relative;}
+ .show .showleft .showitem i{display:block;width:38px;border:1px solid #ccc;border-left:none;height:78px;border-radius: 0 6px 6px 0;}
+ .show .showleft .showitem em{position:absolute;height:12px;width:12px;background:#fff;border:2px solid #19acd6;border-radius:12px;z-index:999999;left:31px;top:31px;}
+ .show .showright .showitem i{display:block;margin-left:38px;width:39px;border:1px solid #ccc;border-right:none;height:78px;border-radius: 6px 0 0 6px;}
+ .show .showright .showitem em{position:absolute;height:12px;width:12px;background:#fff;border:2px solid #19acd6;border-radius:12px;z-index:999999;left:31px;top:31px;}
+ .show .showitem:hover em{border:2px solid #f2c200;}
+ .show .showitem a{ color:#666;}
+ .show .showitem img{ height:60px;}
+ .show span.showitem.addstyle em{ border:2px solid #f2c200;}
+ .canvastools{height:40px; width:800px; position:absolute; left:0px; top:-40px; width:800px; text-align:right;}
+ 
+ 
+ .canvastools a{ display:inline-block; height:30px; padding:0 10px; background:#09C; border-radius:5px; line-height:30px; color:#fff;}
+ .box-append a{display:inline-block; height:30px; padding:0 10px; background:#09C; border-radius:5px; line-height:30px; color:#fff;}
+</style>
+<title>canvas</title>
+</head>
+<body> 
+               <p class="box-append"><a href="#2" class="appendl">左侧插入</a>	
+                
+                <a href="#2" class="appendr">右侧插入</a>	
+                </p> 
+                
+    <div class="demo1">	<!--canvas-->
+        <div class="show clearfix">
+            <div class="showleft sortable clearfix"><!--左侧-->
+               
+            </div>
+            <div class="showright sortable clearfix"><!--右侧-->
+                 	
+            </div>
+            <canvas class="canvas"></canvas><!--连线画布-->
+            <canvas class="backcanvas"></canvas><!--提示线画布-->
+            <div class="canvastools">
+                <a href="#2" class="resetCanvasBtn">重置</a>
+                <a href="#2" class="goBackBtn">回退</a>
+            </div>
+        </div>            
+    </div><!--canvas end--> 
+    
+    <br /><br/>      
+<br/> <br/> <br/> <br/> <br/> <br/> <br/> 
+<h3 style=" height:40px; line-height:40px; width:500px; text-indent:100px;">预览看见的canvas生成图片，保存到服务器</h3>
+<p style="width:500px; word-wrap:break-word;">canvas参数为你的canvas对象，返回一个图片对象，你可以将这个image放到网页结构中，如果要保存图像，可以将canvas.toDataURL("image/png")返回的base64格式的图片数据放到input（type=hidden）中，用户点击上传按钮（或设置表单自动提交），将base64格式的数据上传
+形如：
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAAXNSR0IArs4c6QAAA
+ARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABbSURBVDhPY8AFMvJL/oMwlEs8yMgvJVcjyMb
+SYaERogCC0/OAGIkPwaVQMUhgQWiggWANIAzUhKoBpgjdMIhBUHsxAdxkUgHMBiiXeDAQNkICAsolHuC3kYEBAG/
+wdxC2W2tUAAAAAElFTkSuQmCC
+服务器端接收到字符串（以上字符串可以直接在浏览器中打开，IE低版本就算了，能用canvas的浏览器都可以）后根据data:image/png得知应该保存的文件类型扩展名（png），然后将base64,后面的base64编码字符串解码(后端语言实现，如PHP用base64_decode()函数)，将解码后的二进制数据以二进制的形式保存到服务器上（图片形式）
+如果存数据库，可以直接存base64编码，读取时候解码也行，图片建议以文件形式存储，数据库不适合存大文件</p>          
+</body>
+<script src="js/jquery-1.10.2.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>
+<script type="text/javascript">
+$(function(){	
+	var oojj={};//start	  //object+++++++++++++++++++++++++++
+	oojj.obj=$(".demo1");//顶级对象
+	oojj.linewidth=2;//线宽
+	oojj.linestyle="#19acd6";//线高	
+	oojj.mx=[];//基本数据
+	oojj.my=[];
+	oojj.ms=[];
+	oojj.temp=null;
+	oojj.pair=0;
+	oojj.pairl=[];
+	oojj.pairr=[];
+	oojj.mid_startx=null,this.mid_starty=null,this.mid_endx=null,this.mid_endy=null;//存储虚拟连线起始坐标
+	oojj.init=function(){//初始化
+		this.creatline();
+		this.resizecanvas();
+	};
+	oojj.creatline=function(){//处理			
+		//初始化赋值 列表内容
+		this.obj.find(".showleft").find(".showitem").each(function(index, element) {
+			$(this).attr({group:"gpl",left:$(this).position().left+$(this).outerWidth()-31,top:$(this).position().top+$(this).outerHeight()/2,sel:"0"});
+			if($(this).attr('check')==1){
+				$(this).attr('check','1');
+			}else{
+				$(this).attr('check','0')
+			};				
+		});
+		this.obj.find(".showright").find(".showitem").each(function(index, element) {
+			$(this).attr({group:"gpr",left:$(this).position().left+31,top:$(this).position().top+$(this).outerHeight()/2,sel:"0"});	
+			if($(this).attr('check')==1){
+				$(this).attr('check','1');
+			}else{
+				$(this).attr('check','0')
+			};	
+		});
+		this.obj.find(".showleft").attr('first',0);//初始赋值 列表内容容器
+		this.obj.find(".showright").attr('first',0);			
+	};
+	oojj.resizecanvas=function(){//初始化
+		//canvas 赋值
+		var canvas =this.obj.find(".canvas")[0];  //获取canvas  实际连线标签
+		canvas.width=this.obj.find(".show").width();//canvas宽度等于span容器宽度
+		canvas.height=this.obj.find(".show").height();
+		
+		var backcanvas =this.obj.find(".backcanvas")[0];  //获取canvas 模拟连线标签  
+		backcanvas.width=this.obj.find(".show").width();
+		backcanvas.height=this.obj.find(".show").height();		
+		//end	
+	};	
+	oojj.strockline=function(){		
+		var canvas =this.obj.find(".canvas")[0];  //获取canvas  实际连线标签
+		this.resizecanvas();						
+		var context = canvas.getContext('2d');  //canvas追加2d画图
+		var lastX,lastY;//存放遍历坐标
+		context.clearRect(0,0,this.obj.find(".show").width(),this.obj.find(".show").height());//整个画布清除
+		context.save();  
+		context.beginPath();  
+		context.lineWidth = this.linewidth;  
+		for (var i=0;i<this.ms.length;i++) {  //遍历绘制 
+			 lastX = this.mx[i]; 
+			 lastY = this.my[i];  
+			 if (this.ms[i] == 0) {  
+				context.moveTo(lastX,lastY);  
+			 } else {  
+				context.lineTo(lastX,lastY); 
+			 }  
+		}     
+		context.strokeStyle = this.linestyle;  	
+		context.stroke();  
+		context.restore(); 				
+	};
+	oojj.clearline=function(){
+		var canvas =this.obj.find(".canvas")[0];  //获取canvas  实际连线标签
+		var context = canvas.getContext('2d');  //canvas追加2d画图
+		context.clearRect(0,0,this.obj.find(".show").width(),this.obj.find(".show").height());
+		this.mx=[];//数据清除
+		this.my=[];
+		this.ms=[];
+		this.pairl=[];
+		this.pairr=[];
+		this.pair=0;
+		this.obj.find(".showleft").find(".showitem").each(function(index, element) {					
+			$(this).removeClass("addstyle");
+			$(this).attr("sel","0");
+			$(this).attr("check","0");
+												
+		});
+		this.obj.find(".showleft").attr('first',0);
+		this.obj.find(".showright").find(".showitem").each(function(index, element) {
+			$(this).removeClass("addstyle");
+			$(this).attr("sel","0"); 
+			$(this).attr("check","0");     		
+		});
+		this.obj.find(".showright").attr('first',0);	
+		
+	};
+	oojj.backstrockline=function(){
+		var backcanvas =this.obj.find(".backcanvas")[0];  //获取canvas 模拟连线标签  	
+		var backcontext = backcanvas.getContext('2d'); 
+	    backcontext.clearRect(0,0,this.obj.find(".show").width(),this.obj.find(".show").height());
+	    backcontext.save();  
+	    backcontext.beginPath();  
+	    backcontext.lineWidth = this.linewidth; 
+	    backcontext.moveTo(this.mid_startx,this.mid_starty);  
+	    backcontext.lineTo(this.mid_endx,this.mid_endy); 		 		 
+	    backcontext.strokeStyle = this.linestyle;  	
+	    backcontext.stroke();  
+	    backcontext.restore(); 		
+	};
+	oojj.clearbackline=function(){
+		var backcanvas =this.obj.find(".backcanvas")[0];  //获取canvas 模拟连线标签  	
+		var backcontext = backcanvas.getContext('2d'); 
+		backcontext.clearRect(0,0,this.obj.find(".show").width(),this.obj.find(".show").height());
+		this.mid_startx=null;this.mid_starty=null;this.mid_endx=null;this.mid_endy=null;		
+	};
+	oojj.goBack=function(){
+		var linenlastIndex=this.ms.join("").substr(0,this.ms.length-1).lastIndexOf("0");
+		if(linenlastIndex==0){
+			this.clearline();			
+		}else{
+			this.mx = this.mx.slice(0,linenlastIndex);  //记录值
+			this.my = this.my.slice(0,linenlastIndex);  //坐标
+			this.ms = this.ms.slice(0,linenlastIndex);  
+			this.strockline();
+			var pairindex=this.pairl.length-1;
+			var valpairindex=this.pairl[pairindex];
+			this.obj.find(".showleft").find(".showitem").each(function(index, element) {		
+				if($(this).attr("pair")==valpairindex){	
+					
+					$(this).removeClass("addstyle");
+					$(this).attr("sel","0");
+					$(this).attr("check","0");
+					$(this).removeAttr("pair");
+				};													
+			});
+			this.obj.find(".showleft").attr('first',0);
+			this.obj.find(".showright").find(".showitem").each(function(index, element) {
+				if($(this).attr("pair")==valpairindex){	
+					$(this).removeClass("addstyle");
+					$(this).attr("sel","0"); 
+					$(this).attr("check","0"); 
+					$(this).removeAttr("pair");
+				};   		
+			});
+			this.obj.find(".showright").attr('first',0);
+			//this.pair-=1;
+			this.pairl=this.pairl.slice(0,pairindex);
+			this.pairr=this.pairr.slice(0,pairindex);
+		};		  		
+	};
+	oojj.imageurl=function(){
+		//预览和保存操作	
+		var mycanvas = this.obj.find(".canvas")[0]; 
+		var imageurl = mycanvas.toDataURL("image/png"); //获取canvas转为指定格式图片的路径
+		return imageurl;		
+	};
+	oojj.drag=function(){
+		oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+			$(this).attr({top:$(this).position().top+$(this).outerHeight()/2});	
+		});
+		oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+			$(this).attr({top:$(this).position().top+$(this).outerHeight()/2});	
+		});
+		
+		for(var i=0;i<oojj.pairl.length;i++){
+			var cpmval=oojj.pairl[i];
+			oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+				if($(this).attr("pair")==cpmval){
+					oojj.my[parseInt(i*2)] = $(this).attr('top');
+				}else{};
+			});
+			oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+				if($(this).attr("pair")==cpmval){
+					oojj.my[parseInt(i*2)+parseInt(1)] = $(this).attr('top');
+				}else{};  		
+			});
+		};	
+		this.strockline();
+	};
+	oojj.del=function(remindex){
+		oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+			$(this).attr({top:$(this).position().top+$(this).outerHeight()/2});	
+		});
+		oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+			$(this).attr({top:$(this).position().top+$(this).outerHeight()/2});	
+		});	
+		if(remindex>=0){
+			for(var i=0;i<oojj.pairl.length;i++){
+				var cpmval=oojj.pairl[i];
+				if(oojj.pairl[i]==remindex){
+					oojj.mx.splice(parseInt(i*2),2);
+					oojj.my.splice(parseInt(i*2),2);
+					oojj.ms.splice(parseInt(i*2),2);
+					oojj.pairl.splice(i,1);
+					oojj.pairr.splice(i,1);				
+					oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+						if($(this).attr("pair")==remindex){
+							$(this).removeAttr("pair").removeClass("addstyle").attr("sel","0").attr("check","0");						
+						}else{};
+					});
+					oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+						if($(this).attr("pair")==remindex){
+							$(this).removeAttr("pair").removeClass("addstyle").attr("sel","0").attr("check","0");
+						}else{};  		
+					});									
+				}else{
+					oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+						if($(this).attr("pair")==cpmval){
+							oojj.my[parseInt(i*2)] = $(this).attr('top');
+						}else{};
+					});
+					oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+						if($(this).attr("pair")==cpmval){
+							oojj.my[parseInt(i*2)+parseInt(1)] = $(this).attr('top');
+						}else{};  		
+					});			
+				};		
+			};			
+		}else{
+			for(var i=0;i<oojj.pairl.length;i++){
+				var cpmval=oojj.pairl[i];				
+				oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+					if($(this).attr("pair")==cpmval){
+						oojj.my[parseInt(i*2)] = $(this).attr('top');
+					}else{};
+				});
+				oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+					if($(this).attr("pair")==cpmval){
+						oojj.my[parseInt(i*2)+parseInt(1)] = $(this).attr('top');
+					}else{};  		
+				});			
+						
+			};				
+		};			
+		oojj.drag();		
+	};
+	oojj.append=function(){
+		//初始化赋值 列表内容
+		this.obj.find(".showleft").find(".showitem").each(function(index, element) {
+			var sel=$(this).attr("sel") ? ($(this).attr("sel")==0)?0:$(this).attr("sel"):0;
+			var check=$(this).attr("check") ? ($(this).attr("check")==0)?0:$(this).attr("check"):0;
+			$(this).attr({group:"gpl",left:$(this).position().left+$(this).outerWidth()-31,top:$(this).position().top+$(this).outerHeight()/2});	
+			$(this).attr('sel',sel);
+			$(this).attr('check',check);
+		});
+		this.obj.find(".showright").find(".showitem").each(function(index, element) {
+			var sel=$(this).attr("sel") ? ($(this).attr("sel")==0)?0:$(this).attr("sel"):0;
+			var check=$(this).attr("check") ? ($(this).attr("check")==0)?0:$(this).attr("check"):0;
+			$(this).attr({group:"gpr",left:$(this).position().left+31,top:$(this).position().top+$(this).outerHeight()/2});	
+			$(this).attr('sel',sel);
+			$(this).attr('check',check);
+		});
+		//canvas 赋值
+		var canvas =this.obj.find(".canvas")[0];  //获取canvas  实际连线标签
+		canvas.width=this.obj.find(".show").width();//canvas宽度等于span容器宽度
+		canvas.height=this.obj.find(".show").height();
+		
+		var backcanvas =this.obj.find(".backcanvas")[0];  //获取canvas 模拟连线标签  
+		backcanvas.width=this.obj.find(".show").width();
+		backcanvas.height=this.obj.find(".show").height();		
+		//end
+		this.strockline();				
+	};
+	oojj.redraw=function(){//初始化
+		var that=this;
+		var temparray=[];
+		this.creatline();
+		this.resizecanvas();
+		this.obj.find(".showleft").find(".showitem").each(function(){
+			$(this).addClass("addstyle")
+			temparray.push($(this).attr('pair'));
+			
+		});
+		this.obj.find(".showright").find(".showitem").each(function(){
+			$(this).addClass("addstyle")
+			
+		});
+		temparray.sort(function(a,b){return a-b});
+		for(var i=0;i<temparray.length;i++){			
+			this.obj.find(".showleft").find(".showitem").each(function(){
+				if($(this).attr('pair')==temparray[i]){
+					that.mx.push($(this).attr('left'));
+					that.my.push($(this).attr('top'));
+				}else{};
+			});
+			this.obj.find(".showright").find(".showitem").each(function(){
+				if($(this).attr('pair')==temparray[i]){
+					that.mx.push($(this).attr('left'));
+					that.my.push($(this).attr('top'));
+				}else{};
+			});				
+			that.pairl.push(temparray[i]);
+			that.pairr.push(temparray[i]);		
+		};
+		for(var i=0;i<2*temparray.length;i++){
+			if((i%2)==0){
+				this.ms.push(0);
+			}else{
+				this.ms.push(1);
+			};
+		};
+		var maxtemparray=Math.max.apply(null,temparray)
+		this.pair=parseInt(maxtemparray)+1;
+		this.strockline()
+	};//end	
+	function callf(oojj){
+		var groupstate=false;//按下事件状态，标记按下后的移动，抬起参考
+		oojj.obj.children(".show").find(".showitem").on("mousedown", function(event){
+			groupstate=true;
+			if($(this).attr("check")==1){
+				$(this).attr("sel","1").parent().parent().attr("first","1");
+				oojj.temp=$(this);				
+			}else{
+				$(this).attr("sel","1").addClass("addstyle").parent().parent().attr("first","1");
+				oojj.temp=$(this);						
+			};
+			oojj.mid_startx=$(this).attr("left");
+			oojj.mid_starty=$(this).attr("top");
+			event.preventDefault();				
+		});
+		$(document).mousemove(function(event){		//移动				
+			var $target = $(event.target);		
+			if(groupstate){
+				oojj.mid_endx=event.pageX-oojj.obj.find(".show").offset().left;
+				oojj.mid_endy=event.pageY-oojj.obj.find(".show").offset().top;
+				var targettrue=null;
+				if($target.is(".showitem") && $target.closest(".show").parent().attr("class")==oojj.obj.attr("class") ){
+					targettrue=$target;
+				}else if($target.closest(".showitem").is("span") && $target.closest(".show").parent().attr("class")==oojj.obj.attr("class")){
+					targettrue=$target.closest(".showitem");
+				}else{
+					targettrue=null;
+				};
+							
+				if(targettrue){
+					if(targettrue.parent().parent().attr("first")==0){
+						if(targettrue.attr("check")==0){
+							targettrue.addClass("addstyle").attr("sel","1").parent().siblings().children(".showitem[check=0]").removeClass("addstyle").attr("sel","0");	
+						};					
+					}else{
+						if(targettrue.attr("check")==0){
+							targettrue.addClass("addstyle").attr("sel","1").parent().siblings().children(".showitem[check=0]").removeClass("addstyle").attr("sel","0");
+							oojj.mid_startx=targettrue.attr("left");
+							oojj.mid_starty=targettrue.attr("top");						
+						};														
+					};				
+				}else{
+					if(oojj.obj.find(".showleft").attr("first")==0){
+						oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+							if($(this).attr('check')==0){
+								$(this).attr("sel","0").removeClass("addstyle");
+							};       		
+						});					
+					};
+					if(oojj.obj.find(".showright").attr("first")==0){
+						oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+							if($(this).attr('check')==0){
+								$(this).attr("sel","0").removeClass("addstyle");
+							};       		
+						});
+					};	
+							
+				};
+				oojj.backstrockline();												
+			};		
+			event.preventDefault();
+		});
+		$(document).mouseup(function(event){  //抬起
+			var $target = $(event.target);
+			if(groupstate){	
+				var targettrue;
+				if($target.is(".showitem") && $target.closest(".show").parent().attr("class")==oojj.obj.attr("class") ){
+					targettrue=$target;
+				}else if($target.closest(".showitem").is("span") && $target.closest(".show").parent().attr("class")==oojj.obj.attr("class")){
+					targettrue=$target.closest(".showitem");
+				}else{
+					targettrue=null;
+				};					
+					
+				if(targettrue){
+					if(targettrue.parent().parent().attr("first")==0){
+						if(targettrue.attr("check")==0){
+							if(oojj.temp.attr('check')==1){
+								oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+									if($(this).attr('sel')==1){
+										if($(this).attr('check')==0){
+											$(this).attr("sel","0").removeClass("addstyle");
+										}else{
+											$(this).attr("sel","0").addClass("addstyle");
+										};								
+									}       		
+								});
+								oojj.obj.find(".showleft").attr('first',0);
+								oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+									if($(this).attr('sel')==1){
+										if($(this).attr('check')==0){
+											$(this).attr("sel","0").removeClass("addstyle");
+										}else{
+											$(this).attr("sel","0").addClass("addstyle");
+										};								
+									}      		
+								});
+								oojj.obj.find(".showright").attr('first',0);	
+														
+							}else{							
+								oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+									if($(this).attr('sel')==1){
+										oojj.mx.push($(this).attr('left'));
+										oojj.my.push($(this).attr('top'));
+										oojj.ms.push(0);
+										$(this).attr("check","1");
+										$(this).attr("sel","0");
+										$(this).attr("pair",oojj.pair);
+										oojj.pairl.push(oojj.pair);
+									}       		
+								});	
+								oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+									if($(this).attr('sel')==1){
+										oojj.mx.push($(this).attr('left'));
+										oojj.my.push($(this).attr('top'));
+										oojj.ms.push(1);
+										$(this).attr("check","1");
+										$(this).attr("sel","0");
+										$(this).attr("pair",oojj.pair);
+										oojj.pairr.push(oojj.pair);
+									}       		
+								});	
+								oojj.pair+=1;
+								oojj.obj.find(".showleft").attr('first',0);
+								oojj.obj.find(".showright").attr('first',0);
+								oojj.strockline();									
+							};																
+						}else{
+							
+							oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+								if($(this).attr('sel')==1){
+									if($(this).attr('check')==0){
+										$(this).attr("sel","0").removeClass("addstyle");
+									}else{
+										$(this).attr("sel","0").addClass("addstyle");
+									};								
+								}       		
+							});
+							oojj.obj.find(".showleft").attr('first',0);
+							oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+								if($(this).attr('sel')==1){
+									if($(this).attr('check')==0){
+										$(this).attr("sel","0").removeClass("addstyle");
+									}else{
+										$(this).attr("sel","0").addClass("addstyle");
+									};								
+								}      		
+							});
+							oojj.obj.find(".showright").attr('first',0);						
+						};						
+					}else{
+											
+						oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {
+						
+							if($(this).attr('check')==0){
+								if($(this).attr('sel')==1){
+									$(this).attr("sel","0").removeClass("addstyle");
+								};
+							}else{	
+								if($(this).attr('sel')==1){
+									$(this).attr("sel","0").addClass("addstyle");
+								};						
+							};														
+						});
+						oojj.obj.find(".showleft").attr('first',0);
+						oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+							if($(this).attr('check')==0){
+								if($(this).attr('sel')==1){
+									$(this).attr("sel","0").removeClass("addstyle");
+								};
+							}else{
+								if($(this).attr('sel')==1){
+									$(this).attr("sel","0").addClass("addstyle");
+								};
+							};      		
+						});
+						oojj.obj.find(".showright").attr('first',0);											
+					};
+				}else{				
+					oojj.obj.find(".showleft").find(".showitem").each(function(index, element) {					
+						if($(this).attr('check')==0){
+							if($(this).attr('sel')==1){
+								$(this).attr("sel","0").removeClass("addstyle");
+							};
+						};									      		
+					});
+					oojj.obj.find(".showleft").attr('first',0);
+					oojj.obj.find(".showright").find(".showitem").each(function(index, element) {
+						if($(this).attr('check')==0){
+							if($(this).attr('sel')==1){
+								$(this).attr("sel","0").removeClass("addstyle");
+							};
+						};      		
+					});
+					oojj.obj.find(".showright").attr('first',0);												
+				};
+				oojj.clearbackline();
+				groupstate=false;
+								
+			};		
+			event.preventDefault();			
+		});	
+	};//end  +++++++++++++++++++++++++++++++++++++++++++++++++++
+/*
+ * oojj
+ * @Author toubidu
+ * @param {function}      oojj.init()               		 初始化，数据处理
+ * @param {function}      oojj.strockline()               主画布绘图
+ * @param {function}      oojj.clearline()				 主画布清除，重置
+ * @param {function}      oojj.backstrockline()			 虚拟画布绘图
+ * @param {function}      oojj.clearbackline()			 虚拟画布清除
+ * @param {function}      oojj.goBack()					 连线回退
+ * @param {function}      oojj.imageurl()				 返回image 路径
+ * @param {function}      oojj.drag()	  				 拖拽重绘
+ * @param {function}      oojj.append()	  				 插入数据处理
+ * @param {function}      callf(oojj)	  				 拖拽组合事件处理
+ * @param {function}      oojj.redraw()	  				 有历史数据重绘操作 
+ */
+	//oojj.init();//init
+	//callf(oojj);//call fun
+	//==========objj event start==========
+	oojj.obj.find(".resetCanvasBtn").click(function(){ //重置
+		oojj.clearline();
+	});	
+	oojj.obj.find(".goBackBtn").click(function(){ //回退
+		oojj.goBack();
+	});	
+	oojj.obj.find(".sortable" ).sortable({ //sortable
+		revert: true,
+		handle: ".showlistl-ti,.showlistr-ti",
+		cursor: "move",
+		axis: "y",
+		stop:function(event, ui){		
+			oojj.drag();					
+		}
+	});	
+	$(".show").delegate(".showremove","click",function(){ //remove
+		var remindex=($(this).parent().siblings(".showitem").attr("pair")) ? $(this).parent().siblings(".showitem").attr("pair") : -1;
+		$(this).parent().parent().remove();
+		oojj.del(remindex);
+	});			
+	$(".appendl").click(function(){//append 
+		$(".demo1").find(".showleft").append("<div class='showleftlist'><div class='showlistl-ti'>456<i class='showremove'>x</i></div><span class='showitem'><i></i><em></em></span></div>");
+		oojj.append();//yes
+		callf(oojj);//yes
+		
+	});
+	$(".appendr").click(function(){//append 
+		$(".demo1").find(".showright").append("<div class='showrightlist'><div class='showlistr-ti'>456456<i class='showremove'>x</i></div><span class='showitem'><i></i><em></em></span></div>");
+		oojj.creatline();
+		oojj.resizecanvas();
+		oojj.append();//yes
+		callf(oojj);//yes
+	});
+	
+	//console.log(oojj.imageurl());//获取图片			
+	//==========objj event end===========
+});	 	
+</script>
+</html>

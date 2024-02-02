@@ -1,0 +1,103 @@
+<style>
+    html{background:#000000;}
+    .shine{width: 200px;height:200px;margin: 100px auto;box-shadow:0 0 0 1px rgba(128, 128, 128, 0.45);position:relative;}
+    .shine>div{
+        position: absolute;
+        overflow: hidden;
+    }
+    .shine b{
+        width: 200px;
+        height: 8px;
+        position: absolute;
+        top: 0px;
+        left: 0;
+        background: -webkit-radial-gradient(rgba(0, 195, 255, 0.93), rgba(14, 192, 247, 0) 74%),-webkit-linear-gradient(left, rgba(44, 235, 255, 0), rgba(44, 235, 255, 1), rgba(44, 235, 255, 0)) center center no-repeat;
+        background-size: 100% 100%, 100% 2px;
+        /* background: -webkit-radial-gradient(rgba(0, 195, 255, 0.93), rgba(14, 192, 247, 0) 74%); */
+        /* left: 290px; */
+    }
+    .top,.bottom{
+        width: 204px;
+        height: 8px;
+    }
+    .left,.right{
+        width:8px;
+        height: 204px;
+    }
+    .top{
+        left: -2px;
+        top: -5px;
+    }
+    .right{right: -5px;top:-2px;}
+    .bottom{bottom: -5px;left:-2px;}
+    .left{left: -5px;top:-2px;}
+    .left b,.right b{
+        -webkit-transform: rotate(90deg);
+        /*margin-top: 100px;*/
+        left: -97px;
+    }
+    .top b{
+        margin-left: 100px;
+        -webkit-animation: topAnim 8s linear infinite;
+    }
+    .right b{
+        margin-top: 0;
+        -webkit-animation: rightAnim 8s linear infinite;
+    }
+    .bottom b{
+        margin-left: -100px;
+        -webkit-animation: bottomAnim 8s linear infinite;
+    }
+    .left b {
+        margin-top: 200px;
+        -webkit-animation: leftAnim 8s linear infinite;
+    }
+    /*@-webkit-keyframes topAnim{*/
+        /*0%{left:0;}*/
+        /*25%{left:200px;}*/
+        /*26%{left:200px;opacity:0;}*/
+        /*50%{left:-400px;opacity:0;}*/
+        /*51%{left:-400px;opacity:1;}*/
+        /*100%{left:0;}*/
+    /*}*/
+    /*@-webkit-keyframes rightAnim{*/
+        /*0%{top:0;}*/
+        /*50%{top:400px;}*/
+        /*51%{top:400px;opacity:0;}*/
+        /*75%{top:-200px;opacity:0;}*/
+        /*76%{top:-200px;opacity:1;}*/
+        /*100%{top:0;}*/
+    /*}*/
+    /*@-webkit-keyframes bottomAnim{*/
+        /*0%{left:0;}*/
+        /*25%{left:-200px;}*/
+        /*26%{left:-200px;opacity:0;}*/
+        /*50%{left:400px;opacity:0;}*/
+        /*51%{left:400px;opacity:1;}*/
+        /*100%{left:0;}*/
+    /*}*/
+    /*@-webkit-keyframes leftAnim{*/
+        /*0%{top:0;}*/
+        /*50%{top:-400px;}*/
+        /*51%{top:-400px;opacity:0;}*/
+        /*75%{top:200px;opacity:0;}*/
+        /*76%{top:200px;opacity:1;}*/
+        /*100%{top:0;}*/
+    /*}*/
+</style>
+<div class="features-video">
+
+    <div class="shine">
+        <div class="top"><b></b></div>
+        <div class="right"><b></b></div>
+        <div class="bottom"><b></b></div>
+        <div class="left"><b></b></div>
+    </div>
+
+    <div class="shine">
+        <div class="top"><b></b></div>
+        <div class="right"><b></b></div>
+        <div class="bottom"><b></b></div>
+        <div class="left"><b></b></div>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Render Video with Canvas</title>
+  <style>
+    body {width: 400px;margin: 0 auto;}
+  </style>
+</head>
+<body>
+  <a href="https://sample-videos.com/index.php#sample-mp4-video">测试视频</a>
+  <p>目标视频：</p>
+  <video id="video" width="400" autoplay loop controls>
+    <!-- <source src="./video/mov_bbb.mp4"> -->
+    <!-- <source src="./video/mov_bbb.ogg"> -->
+<!--    <source src="https://vjs.zencdn.net/v/oceans.mp4">-->
+    <source src="https://media.w3.org/2010/05/sintel/trailer.mp4">
+  </video>
+
+  <p>画布（每20毫秒绘制视频当前帧）：</p>
+  <canvas id="canvas" width="400" height="200" border="1px solid #d3d3d3"></canvas>
+  <script>
+    var video = document.getElementById('video');
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    var timer;
+
+    video.addEventListener('play', setRender, false);
+    video.addEventListener('pause', stopRender, false);
+    video.addEventListener('ended', stopRender, false);
+
+    function setRender () {
+      ctx.drawImage(video, 0, 0, 400, 200);
+      timer = setTimeout(setRender, 20);
+    }
+    function stopRender () {
+      clearTimeout(timer);
+    }
+  </script>
+</body>
+</html>

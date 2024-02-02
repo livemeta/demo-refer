@@ -1,0 +1,24 @@
+{
+	"version":"Sample 1.0.0",
+	"model":"nandao.moc",
+	"textures":[
+		"nandao.2048/texture_00.png",
+		"nandao.2048/texture_01.png",
+		"nandao.2048/texture_02.png"
+	],
+	"layout":
+	{
+		"center_x":0,
+		"y": 1.6,
+		"width":2.9
+	},
+	"motions":{
+		"idle":[
+			{"file":"motions/beishang.mtn", "fade_in":500, "fade_out":200},
+			{"file":"motions/gaoxing.mtn", "fade_in":500, "fade_out":200},
+			{"file":"motions/moren.mtn", "fade_in":500, "fade_out":200},
+			{"file":"motions/shengqi.mtn", "fade_in":500, "fade_out":200}
+		]
+	},
+	"physics":"physics.json"
+}

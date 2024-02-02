@@ -1,0 +1,129 @@
+
+<!doctype html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>HTML5 Canvas和jQuery模糊隐藏侧边栏特效|DEMO_jQuery之家-自由分享jQuery、html5、css3的插件库</title>
+	<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+	<link rel="stylesheet" type="text/css" href="css/default.css">
+    <!-- blurry-menu functions and styles -->
+    <link rel="stylesheet" type="text/css" media="all" href="css/blurred-menu-demo.css"/>
+	<!--[if IE]>
+		<script src="http://libs.useso.com/js/html5shiv/3.7/html5shiv.min.js"></script>
+	<![endif]-->
+</head>
+<body>
+	<header class="htmleaf-header">
+		<h1>HTML5 Canvas和jQuery模糊隐藏侧边栏特效 <span>A blurry menu for all kind of websites</span></h1>
+		<div class="htmleaf-links">
+			<a class="htmleaf-icon icon-htmleaf-home-outline" href="http://www.htmleaf.com/" title="jQuery之家" target="_blank"><span> jQuery之家</span></a>
+			<a class="htmleaf-icon icon-htmleaf-arrow-forward-outline" href="http://www.htmleaf.com/html5/html5-canvas/201507172246.html" title="返回下载页" target="_blank"><span> 返回下载页</span></a>
+		</div>
+	</header>
+	<!-- The menu container -->
+	<div id="menu">
+
+	    <!-- This image will not be displayed. The data-source from the canvas-screenshot will be set to this image -->
+	    <img id="captured-image" />
+
+	    <!-- The canvas placeholder where the image after beeing blurred  will be set -->
+	    <canvas id="blurred-bg-canvas"></canvas>
+
+	    <!-- simple demo menu content -->
+	    <div id="menu-content">
+	        <ul>
+	            <li class="first">Lorem ipsum</li>
+	            <li>dolor sit amet</li>
+	            <li>consetetur</li>
+	            <li>diam voluptua</li>
+	            <li>magna aliquyam</li>
+	            <li class="last">sadipscing</li>
+	        </ul>
+	    </div>
+	</div>
+
+	<div id="content">
+	    <!-- Just the Menu Trigger -->
+	    <header>
+	        <div id="hamburger" onclick="BlurryMenu.openMenu()">
+	            <div></div>
+	            <div></div>
+	            <div></div>
+	        </div>
+	    </header>
+		
+	    <h1>Lorem ipsum dolor sit amet</h1>
+	    consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+	    invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam
+	    et justo duo dolores et ea rebum. consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+	    dolore
+	    <p></p>
+	    magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+	    gubergren,no sea takimatasanctus est Lorem ipsum dolor sit amet.
+
+	    <a href="javascript:BlurryMenu.openMenu();"><img src="img/example_2.jpg"></a>
+	    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+	    invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et
+	    ea
+	    rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
+	    amet,<p></p>
+	    consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+	    diam<p></p>
+
+	    <p></p>
+	    voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+	    sanctus
+	    est Lorem ipsum dolor sit amet.
+	    <table>
+	        <tr>
+	            <td><a href="javascript:BlurryMenu.openMenu();"><img src="img/example_4.jpg" ></a>
+	            </td>
+	            <td><a href="javascript:BlurryMenu.openMenu();"><img src="img/example_3.jpg" ></a></td>
+	        </tr>
+	    </table>
+	    <p></p>
+
+	    <p></p>
+
+	    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+	    invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et
+	    ea
+	    rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
+	    amet,
+	    consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+	    diam
+
+
+	    <p></p>
+
+	    <p></p>
+	    voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+	    sanctus
+	    est Lorem ipsum dolor sit amet.
+
+	        <a href="javascript:BlurryMenu.openMenu();"><img src="img/example_1.jpg"></a>
+	    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+	    invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et
+	    ea
+	    rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
+	    amet,
+	    consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+	    diam<p></p>
+	    voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+	    sanctus<br>
+	</div>
+	
+	<script src="js/jquery.min.js" type="text/javascript"></script>
+	<script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+	<!-- jQuery and jQuery UI -->
+    <script type="text/javascript" src="js/jquery-ui-1.10.4.custom.min.js"></script>
+
+    <!-- External aditional scripts -->
+    <script type="text/javascript" src="js/ext_html2canvas.js"></script>
+    <script type="text/javascript" src="js/ext_fastblur.js"></script>
+    <!-- blurry-menu functions -->
+    <script type="text/javascript" src="js/blurry-menu.js"></script>
+</body>
+</html>

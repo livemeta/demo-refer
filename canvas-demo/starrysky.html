@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Starry Sky</title>
+  <style>
+    body {
+      /*width: 800px;*/
+      margin: 0 auto;
+      background: #000;
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <script>
+      // 背景星星逻辑
+      (function() {
+          'use strict';
+
+          var utils = {
+              calcDistance: function(x1, y1, x2, y2) {
+                  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+              }
+          };
+
+          // 星星对象
+          function Star(x, y, vx, vy) {
+              this.x  = x;
+              this.y  = y;
+              this.vx = vx;
+              this.vy = vy;
+          }
+          Star.prototype = {
+              _SPEED : 2,
+              _SIZE  : 2,
+              _COLOR : 'white',
+
+              // 以下参数是用来处理鼠标事件的
+              // 加速范围
+              _ACC_RANGE : 150,
+              // 加速倍率
+              _ACC_TIMES : 5,
+              // 加速倍率削剪幅度
+              _ACC_TIMES_STEP : 0.15,
+
+              // 根据距离，计算当前星星的加速倍率
+              _getSpeedTimes: function(distance) {
+                  return distance >= this._ACC_RANGE ? 1 :
+                      1 + (this._ACC_TIMES - 1) * (this._ACC_RANGE - distance) / this._ACC_RANGE;
+              },
+
+              // 随机生成星星的位置和速度
+              setRandom: function(windowWidth, windowHeight) {
+                  this.x  = Math.random() * windowWidth;
+                  this.y  = Math.random() * windowHeight;
+                  this.vx = (Math.random() - 0.5) * this._SPEED;
+                  this.vy = (Math.random() - 0.5) * this._SPEED;
+                  this.speedTimes = 1;
+
+                  return this;
+              },
+
+              update: function(windowWidth, windowHeight, centerX, centerY, triggered) {
+                  var distance, speedTimes;
+
+                  // 启用了鼠标事件的情况
+                  if (triggered && centerX && centerY) {
+                      // 计算星星和鼠标点的距离
+                      distance = utils.calcDistance(this.x, this.y, centerX, centerY);
+                      // 设置加速倍率
+                      // speedTimes = this._getSpeedTimes(distance) ;
+                      if (distance < this._ACC_RANGE) {
+                          this.speedTimes = this._ACC_TIMES;
+                      }
+                  }
+
+                  this.x += this.vx * this.speedTimes;
+                  this.y += this.vy * this.speedTimes;
+
+                  if (this.speedTimes > 1) {
+                      this.speedTimes -= this._ACC_TIMES_STEP;
+                  } else {
+                      this.speedTimes = 1;
+                  }
+
+                  // 触壁反弹
+                  if ((this.x <= 0 && this.vx < 0) || (this.x >= windowWidth  && this.vx > 0)) {
+                      this.vx = -this.vx;
+                  }
+                  if ((this.y <= 0 && this.vy < 0) || (this.y >= windowHeight && this.vy > 0)) {
+                      this.vy = -this.vy;
+                  }
+
+                  return this;
+              },
+
+              draw: function(context) {
+                  context.beginPath();
+                  context.arc(this.x, this.y, this._SIZE / 2, 0, Math.PI*2, true);
+                  context.fillStyle = this._COLOR;
+                  context.fill();
+                  context.closePath();
+
+                  return this;
+              }
+          };
+
+          // 星星中间的连线的绘制对象
+          var starLine = {
+              _WIDTH : 1,
+              _COLOR : 'WHITE',
+
+              // 星星之间连线的最大长度，用来计算连线的透明度
+              _MAX_LENGTH : 150,
+              // 连线的最大透明度
+              _MAX_ALPHA : 0.3,
+
+              // 计算两颗星星的距离
+              _calcStarDistance: function(starBegin, starEnd) {
+                  return utils.calcDistance(starEnd.x, starEnd.y, starBegin.x, starBegin.y);
+              },
+
+              // 根据距离，计算连线的透明度
+              _getAlpha: function(distance) {
+                  return distance > this._MAX_LENGTH ? 0 :
+                      (this._MAX_LENGTH - distance) * this._MAX_ALPHA / this._MAX_LENGTH;
+              },
+
+              // 在两个星星之间绘制连线
+              _drawLine: function(context, starBegin, starEnd) {
+                  var distance = this._calcStarDistance(starBegin, starEnd);
+                  if (distance < this._MAX_LENGTH) {
+                      context.save();
+
+                      context.beginPath();
+                      context.lineWidth = this._WIDTH;
+                      context.moveTo(starBegin.x, starBegin.y);
+                      context.lineTo(starEnd.x, starEnd.y);
+                      context.globalAlpha = this._getAlpha(distance);
+                      context.strokeStyle = this._COLOR;
+                      context.lineCap = 'round';
+                      context.stroke();
+                      context.closePath();
+
+                      context.restore();
+                  }
+
+                  return this;
+              },
+
+              draw: function(context, starArr, starCount) {
+                  for (var i = 0; i < starCount - 1; ++i) {
+                      for (var j = i + 1; j < starCount; ++j) {
+                          this._drawLine(context, starArr[i], starArr[j]);
+                      }
+                  }
+
+                  return this;
+              }
+          };
+
+          // 星星管理对象
+          var starsScene = {
+              // 星星库中星星对象的数量
+              _STAR_MAX_COUNT  : 200,
+              // 屏幕最大尺寸，用来计算当前屏幕上需要的star数量
+              _SCREEN_MAX_SIZE : 1920 * 1000,
+
+              _windowWidth  : 0,
+              _windowHeight : 0,
+              _canvas  : null,
+              _context : null,
+              _stars     : [],
+              _starCount : 0,
+
+              _mouseX : null,
+              _mouseY : null,
+              _triggered : false,
+
+              _updateWindowSize: function() {
+                  var screenSize;
+
+                  this._windowWidth  = window.innerWidth;
+                  this._windowHeight = window.innerHeight;
+
+                  // 根据屏幕尺寸 计算当前需要显示多少个星星
+                  screenSize = this._windowWidth * this._windowHeight;
+                  this._starCount = Math.floor(this._STAR_MAX_COUNT * (screenSize > this._SCREEN_MAX_SIZE
+                      ? 1 : screenSize / this._SCREEN_MAX_SIZE));
+
+                  for (var i = 0; i < this._starCount; ++i) {
+                      this._stars[i].setRandom(this._windowWidth, this._windowHeight);
+                  }
+
+                  this._canvas.setAttribute('width', this._windowWidth);
+                  this._canvas.setAttribute('height', this._windowHeight);
+
+                  return this;
+              },
+
+              init: function(canvasId) {
+                  var that = this;
+                  var tid;
+
+                  this._canvas  = document.getElementById(canvasId);
+                  this._context = this._canvas.getContext('2d');
+
+                  // 生成stars信息数组
+                  for (var i = 0; i < this._STAR_MAX_COUNT; ++i) {
+                      this._stars.push(new Star());
+                  }
+
+                  this._updateWindowSize();
+                  window.addEventListener('resize', function() {
+                      that._updateWindowSize();
+                  });
+
+                  // 绑定鼠标事件
+                  window.addEventListener('mousemove', function(e) {
+                      that._mouseX = null;
+                      that._mouseY = null;
+
+                      tid && clearTimeout(tid);
+                      tid = setTimeout(function() {
+                          that._triggered = true;
+                          that._mouseX = e.screenX;
+                          that._mouseY = e.screenY;
+                      }, 50);
+                  });
+
+                  function update() {
+                      // 清空画布
+                      that._context.clearRect(0, 0, that._windowWidth, that._windowHeight);
+
+                      // 绘制星星
+                      for (var i = 0; i < that._starCount; ++i) {
+                          that._stars[i].update(
+                              that._windowWidth, that._windowHeight,
+                              that._mouseX, that._mouseY,
+                              that._triggered
+                          ).draw(that._context);
+                      }
+                      that._triggered = false;
+
+                      // 绘制星星之间的连线
+                      starLine.draw(that._context, that._stars, that._starCount);
+
+                      requestAnimationFrame(update);
+                  }
+
+                  update();
+
+                  return this;
+
+              }
+          };
+
+          starsScene.init('stage');
+
+      }());
+  </script>
+</body>
+</html>

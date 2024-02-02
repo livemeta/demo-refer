@@ -6,14 +6,30 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>案例索引</title>
   <style>
+    body {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      padding: 60px 0;
+    }
     .link-list {
       list-style: decimal;
       color: #1890ff;
-      width: 500px;
-      margin: 0 auto;
+      /*width: 300px;*/
+      padding: 10px 10px 10px;
+      margin: 0 10px 50px;
+      border-radius: 16px;
+      background: #fff6f0;
     }
-    .link-list li {
-      padding: 5px 0;
+    .link-list dt {
+      font-size: 26px;
+      text-align: center;
+      margin-top: -50px;
+      padding: 0 0 10px;
+    }
+    .link-list dd {
+      padding: 5px 30px 5px;
+      margin: 0;
     }
     .link-list a {
       color: inherit;
@@ -25,14 +41,71 @@
   </style>
 </head>
 <body>
-<ul class="link-list">
-  <li><a href="./canvas-flood-fill/">canvas 上色</a></li>
-  <li><a href="./canvas-brush/">canvas 毛笔写字画板特效</a></li>
-  <li><a href="./pixi-trans/">Pixi 转场效果</a></li>
-  <li><a href="./svg-demo/" target="_blank">svg demo</a></li>
-  <li><a href="./webgl-demo/" target="_blank">webgl demo</a></li>
-  <li><a href="./ae-path/">AE 路径动画</a></li>
-</ul>
+<dl class="link-list">
+  <dt>Canvas</dt>
+  <dd><a href="./canvas-demo/brush/" target="_blank">毛笔写字画板</a></dd>
+  <dd><a href="./canvas-demo/flood-fill/" target="_blank">上色</a></dd>
+  <dd><a href="./canvas-demo/erase/" target="_blank">擦除</a></dd>
+  <dd><a href="./canvas-demo/drawline/" target="_blank">连线</a></dd>
+  <dd><a href="./canvas-demo/drawline-v2/" target="_blank">连线_2</a></dd>
+  <dd><a href="./canvas-demo/wave.html" target="_blank">滚动波浪线</a></dd>
+  <dd><a href="./canvas-demo/loading.html" target="_blank">波浪加载动画</a></dd>
+  <dd><a href="./canvas-demo/video.html" target="_blank">绘制动态视频</a></dd>
+  <dd><a href="./canvas-demo/starrysky.html" target="_blank">随机点线星空效果</a></dd>
+  <dd><a href="./canvas-demo/game.solitaire.html" target="_blank">游戏-solitaire</a></dd>
+  <dd><a href="./canvas-demo/twinkle.html" target="_blank">鼠标跟随</a></dd>
+  <dd><a href="./canvas-demo/sketch-trailing.html" target="_blank">Sketch 鼠标跟随</a></dd>
+  <dd><a href="./canvas-demo/pixi-trans/" target="_blank">Pixi 转场效果</a></dd>
+  <dd><a href="./canvas-demo/html2canvas/examples/demo.html" target="_blank">html2canvas</a></dd>
+  <dd><a href="./canvas-demo/adaptive-background/demos/base-min.html" target="_blank">取色</a></dd>
+  <dd><a href="./canvas-demo/rgbaster/demo/base.html" target="_blank">取色_2</a></dd>
+  <dd><a href="./canvas-demo/blur-magnifier/" target="_blank">背景模糊</a></dd>
+  <dd><a href="./canvas-demo/blur-StackBlur/" target="_blank">背景模糊_2</a></dd>
+  <dd><a href="./canvas-demo/blur-sidebar/" target="_blank">侧边栏模糊</a></dd>
+</dl>
+
+<dl class="link-list">
+  <dt>WebGL</dt>
+  <dd><a href="./webgl-demo/simple-demo/" target="_blank">练习</a></dd>
+<!--  <dd><a href="./webgl/0-start/" target="_blank">Shader-Geometry</a></dd>-->
+<!--  <dd><a href="./webgl/1-hello/click.html" target="_blank">Shader-Click</a></dd>-->
+  <dd><a href="./webgl/5-3D/animate_cube.html" target="_blank">Shader-Animate</a></dd>
+  <dd><a href="./webgl/11_teapot/" target="_blank">Teapot</a></dd>
+  <dd><a href="./webgl/12_water/" target="_blank">Water</a></dd>
+  <dd><a href="./webgl/demo.html" target="_blank">Demo</a></dd>
+  <dd><a href="https://krpano.com/examples/" target="_blank">krpano Samples</a></dd>
+  <dd><a href="./webgl-demo/vrbox.html" target="_blank">VR 简单立方体</a></dd>
+  <dd><a href="./webgl-demo/vr-demo.html" target="_blank">VR 场景</a></dd>
+  <dd><a href="./webgl-demo/panorama.html" target="_blank">全景</a></dd>
+  <dd><a href="./webgl-demo/earth.html" target="_blank">地球</a></dd>
+  <dd><a href="./webgl-demo/earth_2.html" target="_blank">地球_2</a></dd>
+  <dd><a href="./webgl-demo/solarSystem.html" target="_blank">太阳系</a></dd>
+  <dd><a href="./webgl-demo/pieces.html" target="_blank">图片碎裂</a></dd>
+  <dd><a href="./webgl-demo/wave-pic/" target="_blank">图片抖动效果</a></dd>
+  <dd><a href="./webgl-demo/jquery.ripples/demo/" target="_blank">水纹效果</a></dd>
+</dl>
+
+<dl class="link-list">
+  <dt>SVG</dt>
+  <dd><a href="./svg-demo/path.html">path</a></dd>
+  <dd><a href="./svg-demo/test.svg">test</a></dd>
+  <dd><a href="./svg-demo/loading.html">loading</a></dd>
+  <dd><a href="./svg-demo/animateMotion.html">animateMotion</a></dd>
+  <dd><a href="./svg-demo/wave.html">wave</a></dd>
+</dl>
+
+<dl class="link-list">
+  <dt>HTML5</dt>
+  <dd><a href="./others/ua.html" target="_blank">显示UA</a></dd>
+  <dd><a href="./others/clipborad.html" target="_blank">Clipboard</a></dd>
+  <dd><a href="./others/hashme/" target="_blank">计算文件md5</a></dd>
+  <dd><a href="./ae-path/" target="_blank">AE 路径动画</a></dd>
+</dl>
+
+<dl class="link-list">
+  <dt>Live2d</dt>
+  <dd><a href="./others/live2d-demo_2.1/sample/sampleApp1/" target="_blank">Live2d</a></dd>
+</dl>
 
 </body>
 </html>
