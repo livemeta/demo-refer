@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Query</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body>
+<div class="container">
+    <div class="top-box">
+        <div class="input-box">
+            <div class="input-group" id="input-group">
+                <span class="input-group-addon" id="query-type">Id:</span>
+                <input type="text" class="form-control" placeholder="Please input here" id="input" />
+                <textarea class="form-control" id="script-box" rows="3" placeholder="Please input here"></textarea>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" id="search">Search</button>
+    </div>
+
+
+    <div class="option-box">
+        <div class="input-group option-line">
+            <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="query-type" value="id" checked> Id
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="query-type" value="name"> Name
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="query-type" value="script"> Script
+                </label>
+            </div>
+        </div>
+
+        <div class="input-group option-line">
+            <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="query-scope" value="s" checked> Server
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="query-scope" value="c"> Client
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <pre id="content"></pre>
+</div>
+
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./js/index.js"></script>
+</body>
+</html>

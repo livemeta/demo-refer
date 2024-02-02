@@ -1,0 +1,95 @@
+{
+"frames": {
+	"bear": {
+		"frame": {"x":310, "y":314, "w":146, "h":158},
+		"spriteSourceSize": {"x":6,"y":0,"w":158,"h":158},
+		"sourceSize": {"w":158,"h":158}
+	},
+	"box": {
+		"frame": {"x":220, "y":0, "w":150, "h":158},
+		"spriteSourceSize": {"x":0,"y":0,"w":150,"h":158},
+		"sourceSize": {"w":150,"h":158}
+	},
+	"box_flash": {
+		"frame": {"x":0, "y":0, "w":219, "h":220},
+		"spriteSourceSize": {"x":2,"y":2,"w":222,"h":222},
+		"sourceSize": {"w":222,"h":222}
+	},
+	"box_star": {
+		"frame": {"x":148, "y":380, "w":99, "h":94},
+		"spriteSourceSize": {"x":6,"y":7,"w":111,"h":111},
+		"sourceSize": {"w":111,"h":111}
+	},
+	"box_twinkle": {
+		"frame": {"x":41, "y":435, "w":18, "h":18},
+		"spriteSourceSize": {"x":5,"y":5,"w":28,"h":28},
+		"sourceSize": {"w":28,"h":28}
+	},
+	"egg": {
+		"frame": {"x":371, "y":0, "w":135, "h":156},
+		"spriteSourceSize": {"x":12,"y":1,"w":158,"h":158},
+		"sourceSize": {"w":158,"h":158}
+	},
+	"flower": {
+		"frame": {"x":310, "y":159, "w":150, "h":154},
+		"spriteSourceSize": {"x":8,"y":2,"w":158,"h":158},
+		"sourceSize": {"w":158,"h":158}
+	},
+	"gift_cost_bg": {
+		"frame": {"x":0, "y":380, "w":147, "h":35},
+		"spriteSourceSize": {"x":0,"y":0,"w":147,"h":35},
+		"sourceSize": {"w":147,"h":35}
+	},
+	"gift_item_bg": {
+		"frame": {"x":155, "y":221, "w":154, "h":154},
+		"spriteSourceSize": {"x":0,"y":0,"w":154,"h":154},
+		"sourceSize": {"w":154,"h":154}
+	},
+	"gift_title": {
+		"frame": {"x":0, "y":475, "w":76, "h":29},
+		"spriteSourceSize": {"x":0,"y":0,"w":76,"h":29},
+		"sourceSize": {"w":76,"h":29}
+	},
+	"heart": {
+		"frame": {"x":0, "y":416, "w":35, "h":30},
+		"spriteSourceSize": {"x":3,"y":5,"w":40,"h":40},
+		"sourceSize": {"w":40,"h":40}
+	},
+	"petal_1": {
+		"frame": {"x":21, "y":461, "w":18, "h":12},
+		"spriteSourceSize": {"x":9,"y":15,"w":43,"h":42},
+		"sourceSize": {"w":43,"h":42}
+	},
+	"petal_2": {
+		"frame": {"x":21, "y":447, "w":19, "h":13},
+		"spriteSourceSize": {"x":11,"y":15,"w":42,"h":42},
+		"sourceSize": {"w":42,"h":42}
+	},
+	"petal_3": {
+		"frame": {"x":36, "y":416, "w":19, "h":18},
+		"spriteSourceSize": {"x":10,"y":12,"w":43,"h":42},
+		"sourceSize": {"w":43,"h":42}
+	},
+	"protein_1": {
+		"frame": {"x":40, "y":461, "w":14, "h":8},
+		"spriteSourceSize": {"x":11,"y":17,"w":43,"h":42},
+		"sourceSize": {"w":43,"h":42}
+	},
+	"protein_2": {
+		"frame": {"x":0, "y":447, "w":20, "h":24},
+		"spriteSourceSize": {"x":8,"y":13,"w":43,"h":43},
+		"sourceSize": {"w":43,"h":43}
+	},
+	"tomato": {
+		"frame": {"x":0, "y":221, "w":154, "h":158},
+		"spriteSourceSize": {"x":4,"y":0,"w":158,"h":158},
+		"sourceSize": {"w":158,"h":158}
+	}
+
+},
+"meta": {
+	"image": "gift_atlas.png",
+	"size": {"w": 507, "h": 505},
+	"scale": "1"
+}
+}

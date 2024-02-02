@@ -1,0 +1,48 @@
+body {
+    padding-top: 50px;
+}
+input[type=text], textarea {
+    font-family: 'Consolas';
+}
+.container {
+    position: relative;
+    width: 800px;
+    margin: 0 auto;
+}
+.top-box {
+    display: table;
+}
+.input-box {
+    display: table-cell;
+    vertical-align: top;
+}
+.input-group {
+    width: 250px;
+}
+.input-group-addon {
+    width: 70px;
+}
+.btn-primary {
+    margin-left: 20px;
+    display: table-cell;
+}
+.form-check-inline {
+    display: inline-block;
+    width: 80px;
+    line-height: 50px;
+}
+#script-box {
+    display: none;
+    width: 400px;
+    height: 150px;
+}
+.multi-line #script-box {
+    display: block;
+}
+.multi-line #input {
+    display: none;
+}
+.option-line {
+    display: inline-block;
+    margin-right: 60px;
+}

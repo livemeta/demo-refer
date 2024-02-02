@@ -1,0 +1,53 @@
+<style>
+.box {
+    width: 600px;
+    height: 200px;
+    background-color: green;
+    overflow: hidden;
+}
+.block {
+	float: left;
+    width: 100px;
+    height: 100px;
+	background:url(5q.png) no-repeat;
+    outline:1px solid red;
+}
+.b1 {
+	background-position: 0 0;
+}
+.b2 {
+	background-position: 0 25%;
+}
+.b3 {
+	background-position: 0 50%;
+}
+.b4 {
+	background-position: 0 75%;
+}
+.b5 {
+	background-position: 0 100%;
+}
+</style>
+
+<div class="box" style="">
+	<div class="block b1"></div>
+	<div class="block b2"></div>
+	<div class="block b3"></div>
+	<div class="block b4"></div>
+	<div class="block b5"></div>
+</div>
+
+<pre>
+Let
+  1. M presents the number of division;
+  2. x presents the ratio of height hidden above align position;
+  3. y presents the corresponding percent of background-position required;
+
+Then
+    M * HEIGHT_UNIT * y - HEIGHT_UNIT * y = M * HEIGHT_UNIT * x
+                (M - 1) * HEIGHT_UNIT * y = M * HEIGHT_UNIT * x
+                                        y = ( M / ( M - 1) ) * x
+So	 
+     x <= (0 .. M-1) / M
+     y => (0 .. M-1) / (M - 1)
+</pre>
